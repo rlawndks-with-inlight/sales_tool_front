@@ -13,6 +13,7 @@ import { CustomAvatar } from '../../../components/custom-avatar';
 import { useSnackbar } from '../../../components/snackbar';
 import MenuPopover from '../../../components/menu-popover';
 import { IconButtonAnimate } from '../../../components/animate';
+import { getUserLevelByNumber } from 'src/utils/function';
 
 // ----------------------------------------------------------------------
 
@@ -95,7 +96,7 @@ export default function AccountPopover() {
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
+            {getUserLevelByNumber(user?.level)}
           </Typography>
         </Box>
 
