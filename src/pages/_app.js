@@ -33,7 +33,6 @@ const App = (props) => {
   const { Component, pageProps, head_data, host, host_data } = props;
   const getLayout = Component.getLayout ?? ((page) => page);
   const [headData, setHeadData] = useState({});
-  console.log(head_data)
   useEffect(() => {
     if (Object.keys(head_data).length > 0) {
       setHeadData(head_data)
