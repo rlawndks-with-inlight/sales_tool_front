@@ -249,7 +249,7 @@ const BrandEdit = () => {
                         }} />
                       <TextField
                         label='메인색상'
-                        value={item.theme_css.main_color}
+                        value={item.theme_css?.main_color}
                         type="color"
                         style={{
                           border: 'none'
