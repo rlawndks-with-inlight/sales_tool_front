@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
 
   const initialize = useCallback(async () => {
     try {
-      const { data: response } = await axios.get(`/api/auth`);
+      const { data: response } = await axios.get(`/api/${isManagerRouter(router) && 'manager/'}auth`);
       if (response?.data?.id > 0) {
         const user = response?.data;
         dispatch({
@@ -113,11 +113,11 @@ export function AuthProvider({ children }) {
 
   // LOGIN
   const login = useCallback(async (user_name, user_pw) => {
-    if(!user_name || !user_pw){
+    if (!user_name || !user_pw) {
       toast.error('필수값을 입력해 주세요.');
       return false;
     }
-    const { data: response } = await axios.post('/api/auth/sign-in', {
+    const { data: response } = await axios.post(`/api/${isManagerRouter(router) ? 'manager/' : ''}auth/sign-in`, {
       user_name,
       user_pw,
     });

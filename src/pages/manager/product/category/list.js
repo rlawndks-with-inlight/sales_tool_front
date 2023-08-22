@@ -8,59 +8,43 @@ import { toast } from "react-hot-toast";
 import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
+import { useAuthContext } from "src/auth/useAuthContext";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 const ProductCategoryList = () => {
   const { setModal } = useModal()
+  const { user } = useAuthContext();
   const defaultColumns = [
     {
-      id: 'profile_img',
-      label: '유저프로필',
+      id: 'category_img',
+      label: '카테고리이미지',
       action: (row) => {
-        return <Avatar src={row['profile_img'] ?? "---"} />
+        return <LazyLoadImage src={row['category_img']} style={{ height: '56px' }} />
       }
     },
     {
-      id: 'nick_name',
-      label: '닉네임',
+      id: 'name',
+      label: '카테고리명',
       action: (row) => {
-        return row['nick_name'] ?? "---"
-      }
-    },
-    {
-      id: 'phone_num',
-      label: '휴대폰번호',
-      action: (row) => {
-        return row['phone_num'] ?? "---"
+        return row['name'] ?? "---"
       }
     },
     {
       id: 'created_at',
-      label: '가입일',
+      label: '생성시간',
       action: (row) => {
         return row['created_at'] ?? "---"
       }
     },
     {
-      id: 'edit_password',
-      label: '비밀번호 변경',
+      id: 'updated_at',
+      label: '최종수정시간',
       action: (row) => {
-        return (
-          <>
-            <IconButton onClick={() => {
-              setDialogObj({ ...dialogObj, changePassword: true })
-              setChangePasswordObj({
-                user_pw: '',
-                id: row?.id
-              })
-            }}>
-              <Icon icon='material-symbols:lock-outline' />
-            </IconButton>
-          </>
-        )
+        return row['updated_at'] ?? "---"
       }
     },
     {
       id: 'edit',
-      label: '수정/삭제',
+      label: `수정${user?.level >= 50 ? '/삭제' : ''}`,
       action: (row) => {
         return (
           <>
@@ -69,15 +53,18 @@ const ProductCategoryList = () => {
                 router.push(`edit/${row?.id}`)
               }} />
             </IconButton>
-            <IconButton onClick={() => {
-              setModal({
-                func: () => { deleteUser(row?.id) },
-                icon: 'material-symbols:delete-outline',
-                title: '정말 삭제하시겠습니까?'
-              })
-            }}>
-              <Icon icon='material-symbols:delete-outline' />
-            </IconButton>
+            {user?.level >= 50 &&
+              <>
+                <IconButton onClick={() => {
+                  setModal({
+                    func: () => { deleteItem(row?.id) },
+                    icon: 'material-symbols:delete-outline',
+                    title: '정말 삭제하시겠습니까?'
+                  })
+                }}>
+                  <Icon icon='material-symbols:delete-outline' />
+                </IconButton>
+              </>}
           </>
         )
       }
@@ -113,15 +100,15 @@ const ProductCategoryList = () => {
       ...data,
       content: undefined
     })
-    let data_ = await apiManager('products', 'list', obj);
+    let data_ = await apiManager('product-categories', 'list', obj);
     if (data_) {
       setData(data_);
     }
     setSearchObj(obj);
   }
-  const deleteUser = async (id) => {
-    let result = await deleteUserByManager({ id: id });
-    if (result) {
+  const deleteItem = async (id) => {
+    let data = await apiManager('product-categories', 'delete', { id });
+    if (data) {
       onChangePage(searchObj);
     }
   }
@@ -181,7 +168,7 @@ const ProductCategoryList = () => {
             columns={columns}
             searchObj={searchObj}
             onChangePage={onChangePage}
-            add_button_text={'상품 추가'}
+            add_button_text={'상품 카테고리 추가'}
           />
         </Card>
       </Stack>

@@ -25,6 +25,10 @@ export const PATH_MANAGER = {
   product: {
     root: path(ROOTS_MANAGER, '/product'),
     list: path(ROOTS_MANAGER, '/product/list'),
+    category: {
+      root: path(ROOTS_MANAGER, '/product/category'),
+      list: path(ROOTS_MANAGER, '/product/category/list'),
+    }
   },
   contract: {
     root: path(ROOTS_MANAGER, '/contract'),
@@ -39,5 +43,9 @@ export const PATH_MANAGER = {
     root: path(ROOTS_MANAGER, '/sales-man'),
     list: path(ROOTS_MANAGER, '/sales-man/list'),
     organizationChart: path(ROOTS_MANAGER, '/sales-man/organization-chart'),
+  },
+  log: {
+    root: path(ROOTS_MANAGER, '/log'),
+    list: path(ROOTS_MANAGER, '/log/list'),
   },
 };

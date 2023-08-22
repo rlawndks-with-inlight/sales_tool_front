@@ -2,6 +2,7 @@
 import { PATH_MANAGER } from '../../../routes/paths';
 // components
 import SvgColor from '../../../components/svg-color';
+import { useAuthContext } from 'src/auth/useAuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +18,11 @@ const ICONS = {
 };
 
 const navConfig = () => {
+  const { user } = useAuthContext();
 
+  const isDeveloper = () => {
+    return user?.level >= 50
+  }
   return [
     // GENERAL
     // ----------------------------------------------------------------------
@@ -31,6 +36,19 @@ const navConfig = () => {
     {
       items: [
         {
+          title: '상품관리',
+          path: PATH_MANAGER.product.root,
+          icon: ICONS.user,
+          children: [
+            { title: '상품관리', path: PATH_MANAGER.product.list },
+            { title: '상품카테고리관리', path: PATH_MANAGER.product.category.list },
+          ],
+        },
+      ],
+    },
+    {
+      items: [
+        {
           title: '고객관리',
           path: PATH_MANAGER.user.root,
           icon: ICONS.user,
@@ -40,6 +58,7 @@ const navConfig = () => {
         },
       ],
     },
+
     {
       items: [
         {
@@ -65,18 +84,7 @@ const navConfig = () => {
         },
       ],
     },
-    {
-      items: [
-        {
-          title: '상품관리',
-          path: PATH_MANAGER.product.root,
-          icon: ICONS.user,
-          children: [
-            { title: '상품관리', path: PATH_MANAGER.product.list },
-          ],
-        },
-      ],
-    },
+   
     {
       items: [
         {
@@ -90,6 +98,20 @@ const navConfig = () => {
         },
       ],
     },
+    ...(isDeveloper() ? [
+      {
+        items: [
+          {
+            title: '로그관리',
+            path: PATH_MANAGER.log.root,
+            icon: ICONS.user,
+            children: [
+              { title: '로그관리', path: PATH_MANAGER.log.list },
+            ],
+          },
+        ],
+      },
+    ] : [])
   ];
 }
 

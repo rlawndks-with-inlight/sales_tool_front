@@ -1,62 +1,88 @@
 
-import { Button, Card, Grid, Stack, TextField, Typography } from "@mui/material";
+import { Avatar, Button, Card, CardHeader, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Stack, Tab, Tabs, TextField, TextareaAutosize, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { themeObj } from "src/components/elements/styled-components";
+import { Row, themeObj } from "src/components/elements/styled-components";
 import { useSettingsContext } from "src/components/settings";
 import { Upload } from "src/components/upload";
-import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { base64toFile, getAllIdsWithParents } from "src/utils/function";
 import styled from "styled-components";
-import { react_quill_data } from "src/data/manager-data";
+import { defaultManagerObj, react_quill_data } from "src/data/manager-data";
 import { axiosIns } from "src/utils/axios";
 import { toast } from "react-hot-toast";
 import { useModal } from "src/components/dialog/ModalProvider";
 import dynamic from "next/dynamic";
+import axios from "axios";
+import { useAuthContext } from "src/auth/useAuthContext";
+import ManagerLayout from "src/layouts/manager/ManagerLayout";
+import { apiManager } from "src/utils/api-manager";
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
 })
 
+
+const KakaoWrappers = styled.div`
+width:100%;
+background:#b3c9db;
+min-height:400px;
+display:flex;
+padding-bottom: 1rem;
+`
+const BubbleTail = styled.div`
+
+`
+const OgWrappers = styled.div`
+border-radius:16px;
+background:#fff;
+margin-top:0.5rem;
+width:400px;
+
+`
+const OgImg = styled.div`
+width:400px;
+height:200px;
+border-top-right-radius:16px;
+border-top-left-radius:16px;
+`
+const OgDescription = styled.div`
+display:flex;
+flex-direction:column;
+padding:0.5rem;
+`
 const ProductEdit = () => {
   const { setModal } = useModal()
-  const { themeMode } = useSettingsContext();
-
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  const [item, setItem] = useState({
-    profile_file: undefined,
-    user_name: '',
-    phone_num: '',
-    nick_name: '',
-    user_pw: '',
-    note: '',
-  })
+  const [item, setItem] = useState(defaultManagerObj.brands)
 
   useEffect(() => {
     settingPage();
   }, [])
   const settingPage = async () => {
     if (router.query?.edit_category == 'edit') {
-      let user = await getUserByManager({
+      let data = await apiManager('products', 'get', {
         id: router.query.id
       })
-      setItem(user);
+      console.log(data)
+      setItem(data);
     }
     setLoading(false);
   }
   const onSave = async () => {
     let result = undefined
+    console.log(item)
     if (item?.id) {//수정
-      result = await updateUserByManager({ ...item, id: item?.id })
+      result = await apiManager('products', 'update', item);
     } else {//추가
-      result = await addUserByManager({ ...item })
+      result = await apiManager('products', 'create', item);
     }
     if (result) {
       toast.success("성공적으로 저장 되었습니다.");
-      router.push('/manager/product');
+      router.push(`/manager/product`);
     }
+
   }
   return (
     <>
@@ -68,15 +94,15 @@ const ProductEdit = () => {
                 <Stack spacing={3}>
                   <Stack spacing={1}>
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                      프로필사진
+                      상품 이미지
                     </Typography>
-                    <Upload file={item.profile_file || item.profile_img} onDrop={(acceptedFiles) => {
+                    <Upload file={item.category_file || item.category_img} onDrop={(acceptedFiles) => {
                       const newFile = acceptedFiles[0];
                       if (newFile) {
                         setItem(
                           {
                             ...item,
-                            ['profile_file']: Object.assign(newFile, {
+                            ['category_file']: Object.assign(newFile, {
                               preview: URL.createObjectURL(newFile),
                             })
                           }
@@ -86,8 +112,8 @@ const ProductEdit = () => {
                       setItem(
                         {
                           ...item,
-                          ['profile_img']: '',
-                          ['profile_file']: undefined,
+                          ['category_img']: '',
+                          ['category_file']: undefined,
                         }
                       )
                     }}
@@ -100,70 +126,50 @@ const ProductEdit = () => {
               <Card sx={{ p: 2, height: '100%' }}>
                 <Stack spacing={3}>
                   <TextField
-                    label='아이디'
-                    value={item.user_name}
+                    label='상품명'
+                    value={item.name}
                     onChange={(e) => {
                       setItem(
                         {
                           ...item,
-                          ['user_name']: e.target.value
-                        }
-                      )
-                    }} />
-                  {router.query?.edit_category == 'add' &&
-                    <>
-                      <TextField
-                        label='패스워드'
-                        value={item.user_pw}
-
-                        type='password'
-                        onChange={(e) => {
-                          setItem(
-                            {
-                              ...item,
-                              ['user_pw']: e.target.value
-                            }
-                          )
-                        }} />
-                    </>}
-                  <TextField
-                    label='닉네임'
-                    value={item.nick_name}
-                    onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          ['nick_name']: e.target.value
-                        }
-                      )
-                    }} />
-                  <TextField
-                    label='전화번호'
-                    value={item.phone_num}
-                    placeholder="하이픈(-) 제외 입력"
-                    type='number'
-                    onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          ['phone_num']: e.target.value
+                          ['name']: e.target.value
                         }
                       )
                     }} />
                   <Stack spacing={1}>
-                  <TextField
-                        fullWidth
-                        label="고객메모"
-                        multiline
-                        rows={4}
-                        value={item.note}
-                        onChange={(e) => {
-                          setItem({
-                            ...item,
-                            ['note']: e.target.value
-                          })
-                        }}
-                      />
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                      비고
+                    </Typography>
+                    <ReactQuill
+                      className="max-height-editor"
+                      theme={'snow'}
+                      id={'note'}
+                      placeholder={''}
+                      value={item.note}
+                      modules={react_quill_data.modules}
+                      formats={react_quill_data.formats}
+                      onChange={async (e) => {
+                        let note = e;
+                        if (e.includes('<img src="') && e.includes('base64,')) {
+                          let base64_list = e.split('<img src="');
+                          for (var i = 0; i < base64_list.length; i++) {
+                            if (base64_list[i].includes('base64,')) {
+                              let img_src = base64_list[i];
+                              img_src = await img_src.split(`"></p>`);
+                              let base64 = img_src[0];
+                              img_src = await base64toFile(img_src[0], 'note.png');
+                              const response = await uploadFileByManager({
+                                file: img_src
+                              });
+                              note = await note.replace(base64, response?.url)
+                            }
+                          }
+                        }
+                        setItem({
+                          ...item,
+                          ['note']: note
+                        });
+                      }} />
                   </Stack>
                 </Stack>
               </Card>
@@ -173,7 +179,7 @@ const ProductEdit = () => {
                 <Stack spacing={1} style={{ display: 'flex' }}>
                   <Button variant="contained" style={{
                     height: '48px', width: '120px', marginLeft: 'auto'
-                  }} onClick={()=>{
+                  }} onClick={() => {
                     setModal({
                       func: () => { onSave() },
                       icon: 'material-symbols:edit-outline',

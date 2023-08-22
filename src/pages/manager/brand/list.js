@@ -100,7 +100,6 @@ const BrandList = () => {
                   <Icon icon='material-symbols:delete-outline' />
                 </IconButton>
               </>}
-
           </>
         )
       }

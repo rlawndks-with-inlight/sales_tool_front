@@ -45,7 +45,7 @@ export default function ManagerLayout({ children }) {
   };
   
   const renderNavVertical = <NavVertical openNav={open} onCloseNav={handleClose} />;
-  if (!themeDnsData?.id) {
+  if (!themeDnsData?.id && !(user?.level >= 10)) {
     return (
       <>
 

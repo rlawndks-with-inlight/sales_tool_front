@@ -138,7 +138,7 @@ const Login = () => {
                 bgcolor: 'text.primary',
                 color: (theme) => (theme.palette.mode === 'light' ? 'common.white' : 'grey.800'),
               },
-              marginTop: '24px'
+              margin: '24px 0'
             }}
             onClick={onSubmit}
           >

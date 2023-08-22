@@ -84,7 +84,6 @@ export const get = async (url, params) => {
 }
 export const apiManager = (table, type, params) => {
     let obj = settingParams(table, type, params);
-    console.log(obj)
     let base_url = '/api/manager';
     if (type == 'get') {
         return get(`${base_url}/${table}/${params?.id}`);

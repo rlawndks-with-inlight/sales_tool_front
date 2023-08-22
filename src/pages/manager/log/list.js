@@ -1,66 +1,101 @@
-import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
+import { Card, Chip, IconButton, Stack, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/sections/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/router";
-import { Row } from "src/components/elements/styled-components";
-import { toast } from "react-hot-toast";
+
 import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
 import { useAuthContext } from "src/auth/useAuthContext";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-const ProductList = () => {
+const LogList = () => {
   const { setModal } = useModal()
   const { user } = useAuthContext();
   const defaultColumns = [
     {
-      id: 'name',
-      label: '브랜드명',
+      id: 'user_id',
+      label: '회원No.',
       action: (row) => {
-        return row['name'] ?? "---"
+        return row['user_id'] ?? "---"
       }
     },
     {
-      id: 'dns',
-      label: 'DNS',
+      id: 'user_name',
+      label: '회원아이디',
       action: (row) => {
-        return row['dns'] ?? "---"
+        return row['user_name'] ?? "---"
       }
     },
     {
-      id: 'logo_img',
-      label: 'LOGO',
+      id: 'result',
+      label: 'RESULT',
       action: (row) => {
-        return <LazyLoadImage src={row['logo_img']} style={{ height: '56px' }} />
+
+        return <>
+          <Chip label={row['response_result'] ?? "---"} color={row['response_result'] > 0 ? 'secondary' : 'error'} />
+        </>
       }
     },
     {
-      id: 'favicon_img',
-      label: 'FAVICON',
+      id: 'method',
+      label: 'METHOD',
       action: (row) => {
-        return <LazyLoadImage src={row['favicon_img']} style={{ height: '56px' }} />
+        let request = JSON.parse(row['request']);
+        return request['method'] ?? "---"
       }
     },
     {
-      id: 'company_name',
-      label: '법인상호',
+      id: 'url',
+      label: 'URL',
       action: (row) => {
-        return row['company_name'] ?? "---"
+        let request = JSON.parse(row['request']);
+        return request['url'] ?? "---"
       }
     },
     {
-      id: 'ceo_name',
-      label: '대표자명',
+      id: 'request_data',
+      label: 'REQUEST DATA',
       action: (row) => {
-        return row['ceo_name'] ?? "---"
+        let request = JSON.parse(row['request']);
+        let tooltip = <>
+          <div>{`query: ${JSON.stringify(request?.query)}`}</div>
+          <div>{`params: ${JSON.stringify(request?.params)}`}</div>
+          <div>{`body: ${JSON.stringify(request?.body)}`}</div>
+        </>;
+        return <>
+          <Tooltip title={tooltip}>
+            <IconButton>
+              <Icon icon={'charm:info'} />
+            </IconButton>
+          </Tooltip>
+        </>
       }
     },
     {
-      id: 'business_num',
-      label: '사업자번호',
+      id: 'response_message',
+      label: 'RESULT MESSAGE',
       action: (row) => {
-        return row['business_num'] ?? "---"
+        return row['response_message'] ?? "---"
+      }
+    },
+    {
+      id: 'response_data',
+      label: 'RESULT DATA',
+      action: (row) => {
+        return <>
+          <Tooltip title={row?.response_data}>
+            <IconButton>
+              <Icon icon={'charm:info'} />
+            </IconButton>
+          </Tooltip>
+        </>
+      }
+    },
+    {
+      id: 'ip',
+      label: 'IP',
+      action: (row) => {
+        return row['request_ip'] ?? "---"
       }
     },
     {
@@ -71,28 +106,16 @@ const ProductList = () => {
       }
     },
     {
-      id: 'updated_at',
-      label: '최종수정시간',
-      action: (row) => {
-        return row['updated_at'] ?? "---"
-      }
-    },
-    {
       id: 'edit',
-      label: `수정${user?.level >= 50 ? '/삭제' : ''}`,
+      label: `삭제`,
       action: (row) => {
         return (
           <>
-            <IconButton>
-              <Icon icon='material-symbols:edit-outline' onClick={() => {
-                router.push(`edit/${row?.id}`)
-              }} />
-            </IconButton>
             {user?.level >= 50 &&
               <>
                 <IconButton onClick={() => {
                   setModal({
-                    func: () => { deleteItem(row?.id) },
+                    func: () => { deleteLog(row?.id) },
                     icon: 'material-symbols:delete-outline',
                     title: '정말 삭제하시겠습니까?'
                   })
@@ -100,6 +123,7 @@ const ProductList = () => {
                   <Icon icon='material-symbols:delete-outline' />
                 </IconButton>
               </>}
+
           </>
         )
       }
@@ -115,13 +139,6 @@ const ProductList = () => {
     e_dt: '',
     search: '',
   })
-  const [dialogObj, setDialogObj] = useState({
-    changePassword: false,
-  })
-  const [changePasswordObj, setChangePasswordObj] = useState({
-    id: '',
-    user_pw: ''
-  })
   useEffect(() => {
     pageSetting();
   }, [])
@@ -135,22 +152,20 @@ const ProductList = () => {
       ...data,
       content: undefined
     })
-    let data_ = await apiManager('products', 'list', obj);
+    let data_ = await apiManager('logs', 'list', obj);
     if (data_) {
       setData(data_);
     }
     setSearchObj(obj);
   }
-  const deleteItem = async (id) => {
-    let data = await apiManager('products', 'delete', { id });
+  const deleteLog = async (id) => {
+    let data = await apiManager('logs', 'delete', { id });
     if (data) {
       onChangePage(searchObj);
     }
   }
-  
   return (
     <>
-     
       <Stack spacing={3}>
         <Card>
           <ManagerTable
@@ -158,12 +173,12 @@ const ProductList = () => {
             columns={columns}
             searchObj={searchObj}
             onChangePage={onChangePage}
-            add_button_text={'상품 추가'}
+            add_button_text={''}
           />
         </Card>
       </Stack>
     </>
   )
 }
-ProductList.getLayout = (page) => <ManagerLayout>{page}</ManagerLayout>;
-export default ProductList
+LogList.getLayout = (page) => <ManagerLayout>{page}</ManagerLayout>;
+export default LogList
