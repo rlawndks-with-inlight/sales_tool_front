@@ -77,7 +77,7 @@ const Login = () => {
           disabledEffect
           visibleByDefault
           alt="auth"
-          src={'/assets/illustrations/illustration_manager.png'}
+          src={'/assets/illustrations/illustration_dashboard.png'}
           sx={{ maxWidth: 720 }}
         />
         <StyledSectionBg />
