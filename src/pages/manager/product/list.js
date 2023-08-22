@@ -17,6 +17,13 @@ const ProductList = () => {
   const { user } = useAuthContext();
   const defaultColumns = [
     {
+      id: 'product_img',
+      label: '상품이미지',
+      action: (row) => {
+        return <LazyLoadImage src={row['product_img']} style={{ height: '56px' }} />
+      }
+    },
+    {
       id: 'category_name',
       label: '카테고리명',
       action: (row) => {
