@@ -101,7 +101,6 @@ App.getInitialProps = async (context) => {
       }
     }
   } catch (err) {
-    console.log(err)
     return {
       head_data: {},
     }
