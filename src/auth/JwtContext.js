@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
 
   const initialize = useCallback(async () => {
     try {
-      const { data: response } = await axios.get(`/api/${isManagerRouter(router) && 'manager/'}auth`);
+      const { data: response } = await axios.get(`/api/${isManagerRouter(router) ? 'manager/' : ''}auth`);
       if (response?.data?.id > 0) {
         const user = response?.data;
         dispatch({
