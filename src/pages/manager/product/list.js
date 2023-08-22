@@ -60,7 +60,7 @@ const ProductList = () => {
     },
     {
       id: 'edit',
-      label: `수정${user?.level >= 50 ? '/삭제' : ''}`,
+      label: `수정${user?.level >= 40 ? '/삭제' : ''}`,
       action: (row) => {
         return (
           <>
@@ -69,7 +69,7 @@ const ProductList = () => {
                 router.push(`edit/${row?.id}`)
               }} />
             </IconButton>
-            {user?.level >= 50 &&
+            {user?.level >= 40 &&
               <>
                 <IconButton onClick={() => {
                   setModal({
