@@ -87,7 +87,6 @@ const ContractEdit = () => {
         id: router.query.id || themeDnsData?.id
       })
       setItem(brand_data);
-      console.log(brand_data)
     }
     setLoading(false);
   }

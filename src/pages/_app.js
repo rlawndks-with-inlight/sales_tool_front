@@ -33,6 +33,7 @@ const App = (props) => {
   const { Component, pageProps, head_data, host, host_data } = props;
   const getLayout = Component.getLayout ?? ((page) => page);
   const [headData, setHeadData] = useState({});
+  console.log(head_data)
   useEffect(() => {
     if (Object.keys(head_data).length > 0) {
       setHeadData(head_data)
@@ -93,7 +94,7 @@ App.getInitialProps = async (context) => {
       const res = await fetch(url);
       head_data = await res.json();
       return {
-        head_data: head_data,
+        head_data: head_data?.data,
       }
     } else {
       return {
