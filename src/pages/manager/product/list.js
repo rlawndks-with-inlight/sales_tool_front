@@ -10,57 +10,31 @@ import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
 import { useAuthContext } from "src/auth/useAuthContext";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { commarNumber } from "src/utils/function";
+
 const ProductList = () => {
   const { setModal } = useModal()
   const { user } = useAuthContext();
   const defaultColumns = [
     {
+      id: 'category_name',
+      label: '카테고리명',
+      action: (row) => {
+        return row['category_name'] ?? "---"
+      }
+    },
+    {
       id: 'name',
-      label: '브랜드명',
+      label: '상품명',
       action: (row) => {
         return row['name'] ?? "---"
       }
     },
     {
-      id: 'dns',
-      label: 'DNS',
+      id: 'price',
+      label: '정책가',
       action: (row) => {
-        return row['dns'] ?? "---"
-      }
-    },
-    {
-      id: 'logo_img',
-      label: 'LOGO',
-      action: (row) => {
-        return <LazyLoadImage src={row['logo_img']} style={{ height: '56px' }} />
-      }
-    },
-    {
-      id: 'favicon_img',
-      label: 'FAVICON',
-      action: (row) => {
-        return <LazyLoadImage src={row['favicon_img']} style={{ height: '56px' }} />
-      }
-    },
-    {
-      id: 'company_name',
-      label: '법인상호',
-      action: (row) => {
-        return row['company_name'] ?? "---"
-      }
-    },
-    {
-      id: 'ceo_name',
-      label: '대표자명',
-      action: (row) => {
-        return row['ceo_name'] ?? "---"
-      }
-    },
-    {
-      id: 'business_num',
-      label: '사업자번호',
-      action: (row) => {
-        return row['business_num'] ?? "---"
+        return commarNumber(row['price'])
       }
     },
     {

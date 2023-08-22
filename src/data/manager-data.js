@@ -64,11 +64,10 @@ export const defaultManagerObj = {
       main_color: '#00ab55'
     },
   },
-  articles: {
-    category_id: null,
-    parent_id: null,
-    post_title: '',
-    post_content: '',
-    is_reply: true,
+  products: {
+    product_file: undefined,
+    name: '',
+    price: 0,
+    note: '',
   },
 }

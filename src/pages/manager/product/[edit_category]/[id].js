@@ -21,46 +21,19 @@ const ReactQuill = dynamic(() => import('react-quill'), {
   loading: () => <p>Loading ...</p>,
 })
 
-
-const KakaoWrappers = styled.div`
-width:100%;
-background:#b3c9db;
-min-height:400px;
-display:flex;
-padding-bottom: 1rem;
-`
-const BubbleTail = styled.div`
-
-`
-const OgWrappers = styled.div`
-border-radius:16px;
-background:#fff;
-margin-top:0.5rem;
-width:400px;
-
-`
-const OgImg = styled.div`
-width:400px;
-height:200px;
-border-top-right-radius:16px;
-border-top-left-radius:16px;
-`
-const OgDescription = styled.div`
-display:flex;
-flex-direction:column;
-padding:0.5rem;
-`
 const ProductEdit = () => {
   const { setModal } = useModal()
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-  const [item, setItem] = useState(defaultManagerObj.brands)
-
+  const [item, setItem] = useState(defaultManagerObj.products);
+  const [categoryList, setCategoryList] = useState([]);
   useEffect(() => {
     settingPage();
   }, [])
   const settingPage = async () => {
+    let category_content = await apiManager('product-categories', 'list');
+    setCategoryList(category_content?.content);
     if (router.query?.edit_category == 'edit') {
       let data = await apiManager('products', 'get', {
         id: router.query.id
@@ -96,13 +69,13 @@ const ProductEdit = () => {
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                       상품 이미지
                     </Typography>
-                    <Upload file={item.category_file || item.category_img} onDrop={(acceptedFiles) => {
+                    <Upload file={item.product_file || item.product_img} onDrop={(acceptedFiles) => {
                       const newFile = acceptedFiles[0];
                       if (newFile) {
                         setItem(
                           {
                             ...item,
-                            ['category_file']: Object.assign(newFile, {
+                            ['product_file']: Object.assign(newFile, {
                               preview: URL.createObjectURL(newFile),
                             })
                           }
@@ -112,8 +85,8 @@ const ProductEdit = () => {
                       setItem(
                         {
                           ...item,
-                          ['category_img']: '',
-                          ['category_file']: undefined,
+                          ['product_img']: '',
+                          ['product_file']: undefined,
                         }
                       )
                     }}
@@ -125,6 +98,21 @@ const ProductEdit = () => {
             <Grid item xs={12} md={6}>
               <Card sx={{ p: 2, height: '100%' }}>
                 <Stack spacing={3}>
+                  <FormControl>
+                    <InputLabel>상품카테고리</InputLabel>
+                    <Select label='쇼핑몰 데모넘버' value={item?.category_id} onChange={(e) => {
+                      setItem(
+                        {
+                          ...item,
+                          category_id: e.target.value
+                        }
+                      )
+                    }}>
+                      {categoryList.map((item, idx) => {
+                        return <MenuItem value={item?.id}>{item?.name}</MenuItem>
+                      })}
+                    </Select>
+                  </FormControl>
                   <TextField
                     label='상품명'
                     value={item.name}
@@ -133,6 +121,17 @@ const ProductEdit = () => {
                         {
                           ...item,
                           ['name']: e.target.value
+                        }
+                      )
+                    }} />
+                  <TextField
+                    label='가격'
+                    value={item.price}
+                    onChange={(e) => {
+                      setItem(
+                        {
+                          ...item,
+                          ['price']: e.target.value
                         }
                       )
                     }} />
