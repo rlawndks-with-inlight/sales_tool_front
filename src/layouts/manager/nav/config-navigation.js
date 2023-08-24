@@ -3,6 +3,9 @@ import { PATH_MANAGER } from '../../../routes/paths';
 // components
 import SvgColor from '../../../components/svg-color';
 import { useAuthContext } from 'src/auth/useAuthContext';
+import { useEffect } from 'react';
+import { apiManager } from 'src/utils/api-manager';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -20,8 +23,18 @@ const ICONS = {
 const navConfig = () => {
   const { user } = useAuthContext();
 
+  const [productCategoryList, setProductCategoryList] = useState([]);
   const isDeveloper = () => {
     return user?.level >= 50
+  }
+  useEffect(() => {
+    settingSidebar();
+  }, [])
+
+  const settingSidebar = async () => {
+    let product_category_list = await apiManager('product-categories', 'list');
+    setProductCategoryList(product_category_list?.content ?? []);
+
   }
   return [
     // GENERAL
@@ -40,7 +53,18 @@ const navConfig = () => {
           path: PATH_MANAGER.product.root,
           icon: ICONS.user,
           children: [
-            { title: '상품관리', path: PATH_MANAGER.product.list },
+            {
+              title: '상품관리', path: PATH_MANAGER.product.list,
+              children: [
+                { title: '전체', path: PATH_MANAGER.product.list },
+                ...productCategoryList.map((item) => {
+                  return {
+                    title: item?.name,
+                    path: PATH_MANAGER.product.list + `/${item?.id}`
+                  }
+                })
+              ]
+            },
             { title: '상품카테고리관리', path: PATH_MANAGER.product.category.list },
           ],
         },
@@ -84,7 +108,7 @@ const navConfig = () => {
         },
       ],
     },
-   
+
     {
       items: [
         {

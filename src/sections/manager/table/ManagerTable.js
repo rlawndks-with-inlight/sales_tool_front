@@ -67,7 +67,7 @@ export default function ManagerTable(props) {
                   format='yyyy-MM-dd'
                   onChange={(newValue) => {
                     setSDt(newValue);
-                    onChangePage({ ...searchObj, s_dt: returnMoment(false, new Date(newValue)).substring(0, 10) })
+                    onChangePage({ ...searchObj, s_dt: returnMoment(false, new Date(newValue)).substring(0, 10), page: 1 })
                   }}
                   renderInput={(params) => <TextField fullWidth {...params} margin="normal" />}
                   sx={{ marginRight: '0.75rem', width: '180px', height: '32px' }}
@@ -79,7 +79,7 @@ export default function ManagerTable(props) {
                   format='yyyy-MM-dd'
                   onChange={(newValue) => {
                     setEDt(newValue);
-                    onChangePage({ ...searchObj, e_dt: returnMoment(false, new Date(newValue)).substring(0, 10) })
+                    onChangePage({ ...searchObj, e_dt: returnMoment(false, new Date(newValue)).substring(0, 10), page: 1 })
                   }}
                   renderInput={(params) => <TextField fullWidth {...params} margin="normal" />}
                   sx={{ width: '180px' }}
@@ -94,6 +94,7 @@ export default function ManagerTable(props) {
                   format='yyyy-MM-dd'
                   onChange={(newValue) => {
                     setSDt(newValue);
+                    onChangePage({ ...searchObj, s_dt: returnMoment(false, new Date(newValue)).substring(0, 10), page: 1 })
                   }}
                   renderInput={(params) => <TextField fullWidth {...params} margin="normal" />}
                   sx={{ marginRight: '0.75rem', flexGrow: 1 }}
@@ -105,6 +106,7 @@ export default function ManagerTable(props) {
                   format='yyyy-MM-dd'
                   onChange={(newValue) => {
                     setEDt(newValue);
+                    onChangePage({ ...searchObj, e_dt: returnMoment(false, new Date(newValue)).substring(0, 10), page: 1 })
                   }}
                   renderInput={(params) => <TextField fullWidth {...params} margin="normal" />}
                   sx={{ flexGrow: 1 }}

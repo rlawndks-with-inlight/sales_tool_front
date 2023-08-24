@@ -90,6 +90,7 @@ export const apiManager = (table, type, params) => {
         dns_data = JSON.parse(dns_data);
         obj['brand_id'] = dns_data?.id;
     }
+    
     let base_url = '/api/manager';
     if (type == 'get') {
         return get(`${base_url}/${table}/${params?.id}`);
@@ -121,7 +122,15 @@ const settingdeleteImageObj = (obj_) => {//이미지 존재안할시 삭제함
 }
 const settingParams = (table, type, params) => {
     let obj = { ...params };
-
+    console.log('##############')
+    console.log(obj)
+    let keys = Object.keys(obj);
+    for(var i = 0;i<keys.length;i++){
+        let key = keys[i];
+        if(!obj[key]){
+            delete obj[key];
+        }
+    }
     if (type == 'create') {
         obj = settingdeleteImageObj(obj);
     }

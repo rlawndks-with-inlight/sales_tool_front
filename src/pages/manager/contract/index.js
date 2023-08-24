@@ -8,7 +8,7 @@ export default function Index() {
 
   useEffect(() => {
     if (router.pathname === '/manager/contract') {
-      router.push('/manager/contract/edit');
+      router.push('/manager/contract/list');
     }
   });
   return null;

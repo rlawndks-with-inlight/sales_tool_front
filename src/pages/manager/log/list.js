@@ -1,4 +1,4 @@
-import { Card, Chip, IconButton, Stack, Tooltip } from "@mui/material";
+import { Card, Chip, Divider, Grid, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/sections/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -8,6 +8,7 @@ import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
 import { useAuthContext } from "src/auth/useAuthContext";
+import { Row } from "src/components/elements/styled-components";
 const LogList = () => {
   const { setModal } = useModal()
   const { user } = useAuthContext();
@@ -167,7 +168,14 @@ const LogList = () => {
   return (
     <>
       <Stack spacing={3}>
+        <Row style={{ padding: '12px', columnGap: '0.5rem' }}>
+          <div>성공: {data?.success && (data?.success[0]?.success ?? 0)}</div>
+          <div>실패: {data?.fail && (data?.fail[0]?.fail ?? 0)}</div>
+        </Row>
         <Card>
+          <Stack spacing={1} sx={{ p: 1.5 }}>
+          </Stack>
+          <Divider />
           <ManagerTable
             data={data}
             columns={columns}
