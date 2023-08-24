@@ -92,6 +92,7 @@ const SalesManList = () => {
     s_dt: '',
     e_dt: '',
     search: '',
+    is_sales_man: true,
   })
   const [dialogObj, setDialogObj] = useState({
     changePassword: false,
@@ -106,7 +107,7 @@ const SalesManList = () => {
   const pageSetting = () => {
     let cols = defaultColumns;
     setColumns(cols)
-    onChangePage({ ...searchObj, page: 1, });
+    onChangePage({ ...searchObj, page: 1 });
   }
   const onChangePage = async (obj) => {
     setData({

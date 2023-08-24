@@ -1,7 +1,6 @@
 const Index = () => {
     return (
         <>
-        asdsdasa
         
         </>
     )

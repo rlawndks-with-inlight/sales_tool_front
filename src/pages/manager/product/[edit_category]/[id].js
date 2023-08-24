@@ -22,6 +22,7 @@ const ReactQuill = dynamic(() => import('react-quill'), {
 })
 
 const ProductEdit = () => {
+  const { user } = useAuthContext();
   const { setModal } = useModal()
   const router = useRouter();
 
