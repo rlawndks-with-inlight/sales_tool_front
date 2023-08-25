@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
+import { getUserLevelByNumber } from "src/utils/function";
 const SalesManList = () => {
   const { setModal } = useModal()
   const defaultColumns = [
@@ -19,17 +20,45 @@ const SalesManList = () => {
       }
     },
     {
-      id: 'nick_name',
+      id: 'user_name',
+      label: '유저아이디',
+      action: (row) => {
+        return row['user_name'] ?? "---"
+      }
+    },
+    {
+      id: 'parent_user_name',
+      label: '상위유저아이디',
+      action: (row) => {
+        return row['parent_user_name'] ?? "---"
+      }
+    },
+    {
+      id: 'nickname',
       label: '닉네임',
       action: (row) => {
-        return row['nick_name'] ?? "---"
+        return row['nickname'] ?? "---"
+      }
+    },
+    {
+      id: 'name',
+      label: '이름',
+      action: (row) => {
+        return row['name'] ?? "---"
       }
     },
     {
       id: 'phone_num',
-      label: '휴대폰번호',
+      label: '전화번호',
       action: (row) => {
         return row['phone_num'] ?? "---"
+      }
+    },
+    {
+      id: 'level',
+      label: '유저레벨',
+      action: (row) => {
+        return getUserLevelByNumber(row['level'])
       }
     },
     {
@@ -37,6 +66,13 @@ const SalesManList = () => {
       label: '가입일',
       action: (row) => {
         return row['created_at'] ?? "---"
+      }
+    },
+    {
+      id: 'last_login_time',
+      label: '마지막로그인시간',
+      action: (row) => {
+        return row['last_login_time'] ?? "---"
       }
     },
     {
@@ -114,7 +150,7 @@ const SalesManList = () => {
       ...data,
       content: undefined
     })
-    let data_ = await apiManager('users', 'list', obj);
+    let data_ = await apiManager('sales-man', 'list', obj);
     if (data_) {
       setData(data_);
     }
@@ -127,7 +163,7 @@ const SalesManList = () => {
     }
   }
   const onChangeUserPassword = async () => {
-    let result = await changePasswordUserByManager(changePasswordObj);
+    let result = await apiManager(`users/change-pw`, 'update', changePasswordObj);
     if (result) {
       setDialogObj({
         ...dialogObj,
@@ -182,7 +218,7 @@ const SalesManList = () => {
             columns={columns}
             searchObj={searchObj}
             onChangePage={onChangePage}
-            add_button_text={'유저 추가'}
+            add_button_text={'영업자 추가'}
           />
         </Card>
       </Stack>

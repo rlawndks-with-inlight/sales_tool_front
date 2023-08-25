@@ -76,6 +76,10 @@ const BrandEdit = () => {
       value: 3,
       label: '사용할 본사 계정'
     }] : []),
+    ...(user?.level >= 50 ? [{
+      value: 4,
+      label: '데모설정'
+    }] : []),
   ]
 
   useEffect(() => {
@@ -118,7 +122,7 @@ const BrandEdit = () => {
         router.push(`/manager/brand`);
       }
     }
-    
+
   }
   return (
     <>
@@ -364,7 +368,7 @@ const BrandEdit = () => {
                           <Row style={{ flexDirection: 'column', marginTop: '0.5rem' }}>
                             <div>사용자</div>
                             <div style={{ background: '#fff', padding: '0.5rem', borderRadius: '16px', color: 'blue', textDecoration: 'underline', width: 'auto', maxWidth: '300px' }}>
-                              {window.location.origin}
+                              {'https://' + item?.dns}
                             </div>
                             <OgWrappers>
                               {(item?.og_img || item?.og_file) ?
@@ -541,6 +545,41 @@ const BrandEdit = () => {
                             }
                           )
                         }} />
+                    </Stack>
+                  </Card>
+                </Grid>
+              </>}
+              {currentTab == 4 &&
+              <>
+                <Grid item xs={12} md={6}>
+                  <Card sx={{ p: 2, height: '100%' }}>
+                    <Stack spacing={3}>
+                      <FormControl>
+                        <InputLabel>쇼핑몰 데모넘버</InputLabel>
+                        <Select label='쇼핑몰 데모넘버' value={item.setting_obj?.shop_demo_num} onChange={(e) => {
+                          setItem(
+                            {
+                              ...item,
+                              ['setting_obj']: {
+                                ...item.setting_obj,
+                                shop_demo_num: e.target.value
+                              }
+                            }
+                          )
+                        }}>
+                          <MenuItem value={0}>사용안함</MenuItem>
+                          {[1, 2, 3].map((num, idx) => {
+                            return <MenuItem value={num}>데모 {num}</MenuItem>
+                          })}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card sx={{ p: 2, height: '100%' }}>
+                    <Stack spacing={3}>
+                       
                     </Stack>
                   </Card>
                 </Grid>

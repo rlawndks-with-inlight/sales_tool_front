@@ -41,7 +41,7 @@ export default function Header({ onOpenNav }) {
 
   const renderContent = (
     <>
-      {isDesktop && isNavHorizontal && <Logo sx={{ mr: 2.5 }} />}
+      {isDesktop && isNavHorizontal && <Logo sx={{ mr: 2.5, height:72 }} />}
 
       {!isDesktop && (
         <IconButton onClick={onOpenNav} sx={{ mr: 1, color: 'text.primary' }}>
@@ -64,7 +64,6 @@ export default function Header({ onOpenNav }) {
       </Stack>
     </>
   );
-
   return (
     <AppBar
       sx={{
@@ -87,7 +86,7 @@ export default function Header({ onOpenNav }) {
             width: 1,
             bgcolor: 'background.default',
             height: HEADER.H_MANAGER_DESKTOP_OFFSET,
-            borderBottom: `dashed 1px ${theme.palette.divider}`,
+            // borderBottom: `dashed 1px ${theme.palette.divider}`,
           }),
           ...(isNavMini && {
             width: `calc(100% - ${NAV.W_MANAGER_MINI + 1}px)`,

@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
+import { getUserLevelByNumber } from "src/utils/function";
 const UserList = () => {
   const { setModal } = useModal()
   const defaultColumns = [
@@ -19,10 +20,10 @@ const UserList = () => {
       }
     },
     {
-      id: 'nick_name',
+      id: 'nickname',
       label: '닉네임',
       action: (row) => {
-        return row['nick_name'] ?? "---"
+        return row['nickname'] ?? "---"
       }
     },
     {
@@ -30,6 +31,13 @@ const UserList = () => {
       label: '휴대폰번호',
       action: (row) => {
         return row['phone_num'] ?? "---"
+      }
+    },
+    {
+      id: 'level',
+      label: '유저레벨',
+      action: (row) => {
+        return getUserLevelByNumber(row['level'])
       }
     },
     {
@@ -126,7 +134,7 @@ const UserList = () => {
     }
   }
   const onChangeUserPassword = async () => {
-    let result = await changePasswordUserByManager(changePasswordObj);
+    let result = await apiManager(`users/change-pw`, 'update', changePasswordObj);
     if (result) {
       setDialogObj({
         ...dialogObj,

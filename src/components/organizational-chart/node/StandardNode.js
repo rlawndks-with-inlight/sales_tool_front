@@ -5,6 +5,7 @@ import { Typography, IconButton, MenuItem, Card, Avatar } from '@mui/material';
 //
 import Iconify from '../../iconify';
 import MenuPopover from '../../menu-popover';
+import { getUserLevelByNumber } from 'src/utils/function';
 
 // ----------------------------------------------------------------------
 
@@ -51,16 +52,15 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
 
         <Avatar
           alt={node.name}
-          src={node.avatar || ''}
+          src={node.profile_img || ''}
           sx={{ mr: 2, mb: 1, width: 48, height: 48 }}
         />
 
-        <Typography variant="subtitle2" noWrap>
-          {node.name}
+        <Typography variant="subtitle2">
+          {node.user_name}
         </Typography>
-
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-          {node.role}
+          {getUserLevelByNumber(node.level)}
         </Typography>
       </Card>
 
@@ -72,7 +72,7 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
         arrow="left-center"
         sx={{ width: 160 }}
       >
-        {onDelete && (
+        {/* {onDelete && (
           <MenuItem
             onClick={() => {
               handleClosePopover();
@@ -83,7 +83,7 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
             <Iconify icon="eva:trash-2-outline" />
             Delete
           </MenuItem>
-        )}
+        )} */}
 
         {onEdit && (
           <MenuItem
@@ -93,7 +93,7 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
             }}
           >
             <Iconify icon="eva:edit-fill" />
-            Edit
+            매출내역
           </MenuItem>
         )}
       </MenuPopover>

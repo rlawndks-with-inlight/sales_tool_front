@@ -62,7 +62,6 @@ export default function Button(theme) {
         // CONTAINED
         ...(containedVariant && {
           '&:hover': {
-            boxShadow: theme.customShadows[color],
           },
         }),
         // SOFT

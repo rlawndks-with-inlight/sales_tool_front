@@ -1,26 +1,41 @@
+import { useEffect } from "react";
 import { useState } from "react";
+import AddContract from "src/sections/contract/AddContract";
+import AddSalesMan from "src/sections/contract/AddSalesMan";
+import InsertCustomer from "src/sections/contract/InsertCustomer";
+import SelectItems from "src/sections/contract/SelectItems";
 import styled from "styled-components"
 
 const Contract = () => {
 
     const [activeStep, setActiveStep] = useState(0);
+
+    useEffect(() => {
+        settingPage(activeStep);
+    }, [activeStep])
+    const settingPage = (step) => {
+        if (step == 0) {
+
+        }
+    }
+
     return (
         <>
             {activeStep == 0 &&
                 <>
-                    상품 선택
+                    <SelectItems />
                 </>}
             {activeStep == 1 &&
                 <>
-                    고객정보입력
+                    <InsertCustomer />
                 </>}
             {activeStep == 2 &&
                 <>
-                    새로운 영업자일시 영업자 가입
+                    <AddSalesMan />
                 </>}
             {activeStep == 3 &&
                 <>
-                    계약서 작성
+                    <AddContract />
                 </>}
             {activeStep == 4 &&
                 <>

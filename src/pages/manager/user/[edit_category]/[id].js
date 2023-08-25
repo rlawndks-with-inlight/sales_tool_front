@@ -29,7 +29,7 @@ const UserEdit = () => {
     profile_file: undefined,
     user_name: '',
     phone_num: '',
-    nick_name: '',
+    nickname: '',
     user_pw: '',
     note: '',
   })
@@ -128,12 +128,12 @@ const UserEdit = () => {
                     </>}
                   <TextField
                     label='닉네임'
-                    value={item.nick_name}
+                    value={item.nickname}
                     onChange={(e) => {
                       setItem(
                         {
                           ...item,
-                          ['nick_name']: e.target.value
+                          ['nickname']: e.target.value
                         }
                       )
                     }} />
@@ -151,19 +151,19 @@ const UserEdit = () => {
                       )
                     }} />
                   <Stack spacing={1}>
-                  <TextField
-                        fullWidth
-                        label="고객메모"
-                        multiline
-                        rows={4}
-                        value={item.note}
-                        onChange={(e) => {
-                          setItem({
-                            ...item,
-                            ['note']: e.target.value
-                          })
-                        }}
-                      />
+                    <TextField
+                      fullWidth
+                      label="고객메모"
+                      multiline
+                      rows={4}
+                      value={item.note}
+                      onChange={(e) => {
+                        setItem({
+                          ...item,
+                          ['note']: e.target.value
+                        })
+                      }}
+                    />
                   </Stack>
                 </Stack>
               </Card>
@@ -173,7 +173,7 @@ const UserEdit = () => {
                 <Stack spacing={1} style={{ display: 'flex' }}>
                   <Button variant="contained" style={{
                     height: '48px', width: '120px', marginLeft: 'auto'
-                  }} onClick={()=>{
+                  }} onClick={() => {
                     setModal({
                       func: () => { onSave() },
                       icon: 'material-symbols:edit-outline',

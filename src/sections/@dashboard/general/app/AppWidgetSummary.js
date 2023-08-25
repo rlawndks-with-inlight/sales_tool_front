@@ -54,7 +54,7 @@ export default function AppWidgetSummary({ title, percent, total, chart, sx, ...
 
         <TrendingInfo percent={percent} />
 
-        <Typography variant="h3">{fNumber(total)}</Typography>
+        <Typography variant="h3">{fNumber(total)}{other?.total_label}</Typography>
       </Box>
 
       <Chart type="bar" series={[{ data: series }]} options={chartOptions} width={60} height={36} />

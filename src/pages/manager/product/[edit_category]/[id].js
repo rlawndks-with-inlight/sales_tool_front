@@ -34,7 +34,12 @@ const ProductEdit = () => {
   }, [])
   const settingPage = async () => {
     let category_content = await apiManager('product-categories', 'list');
+    if(!(category_content?.content.length > 0)){
+      toast.error('상품 카테고리를 우선 추가해주세요.');
+      router.push('/manager/product/category');
+    }
     setCategoryList(category_content?.content);
+    
     if (router.query?.edit_category == 'edit') {
       let data = await apiManager('products', 'get', {
         id: router.query.id
