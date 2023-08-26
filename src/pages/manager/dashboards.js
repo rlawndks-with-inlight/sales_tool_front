@@ -16,7 +16,7 @@ import {
     AppWidgetSummary,
     AppCurrentDownload,
     AppTopInstalledCountries,
-} from 'src/sections/@dashboard/general/app';
+} from 'src/views/@dashboard/general/app';
 import { useTheme } from '@mui/material/styles';
 import { useAuthContext } from 'src/auth/useAuthContext';
 import { SeoIllustration } from 'src/assets/illustrations';
@@ -49,7 +49,7 @@ const Dashboards = () => {
                             description="새로운 상품 판매를 위해 쇼핑몰을 방문해 주세요."
                             img={<>
                             </>}
-                            action={<Button variant="contained" onClick={() => { router.push('/contract') }}>쇼핑몰가기</Button>}
+                            action={<Button variant="contained" onClick={() => { router.push('/shop') }}>쇼핑몰가기</Button>}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>

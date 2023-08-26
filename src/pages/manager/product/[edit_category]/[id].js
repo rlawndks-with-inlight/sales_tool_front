@@ -34,12 +34,12 @@ const ProductEdit = () => {
   }, [])
   const settingPage = async () => {
     let category_content = await apiManager('product-categories', 'list');
-    if(!(category_content?.content.length > 0)){
+    if (!(category_content?.content.length > 0)) {
       toast.error('상품 카테고리를 우선 추가해주세요.');
       router.push('/manager/product/category');
     }
     setCategoryList(category_content?.content);
-    
+
     if (router.query?.edit_category == 'edit') {
       let data = await apiManager('products', 'get', {
         id: router.query.id
@@ -97,6 +97,31 @@ const ProductEdit = () => {
                       )
                     }}
                     />
+                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                      상품 배너 이미지 (쇼핑몰 배너 이미지)
+                    </Typography>
+                    <Upload file={item.product_banner_file || item.product_banner_img} onDrop={(acceptedFiles) => {
+                      const newFile = acceptedFiles[0];
+                      if (newFile) {
+                        setItem(
+                          {
+                            ...item,
+                            ['product_banner_file']: Object.assign(newFile, {
+                              preview: URL.createObjectURL(newFile),
+                            })
+                          }
+                        );
+                      }
+                    }} onDelete={() => {
+                      setItem(
+                        {
+                          ...item,
+                          ['product_banner_img']: '',
+                          ['product_banner_file']: undefined,
+                        }
+                      )
+                    }}
+                    />
                   </Stack>
                 </Stack>
               </Card>
@@ -131,7 +156,7 @@ const ProductEdit = () => {
                       )
                     }} />
                   <TextField
-                    label='가격'
+                    label='정책가'
                     value={item.price}
                     onChange={(e) => {
                       setItem(

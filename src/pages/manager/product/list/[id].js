@@ -1,6 +1,6 @@
 import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import ManagerTable from "src/sections/manager/table/ManagerTable";
+import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/router";
 import { Row } from "src/components/elements/styled-components";
@@ -73,7 +73,7 @@ const ProductList = () => {
                     <>
                         <IconButton>
                             <Icon icon='material-symbols:edit-outline' onClick={() => {
-                                router.push(`edit/${row?.id}`)
+                                router.push(`/manager/product/edit/${row?.id}`)
                             }} />
                         </IconButton>
                         {user?.level >= 40 &&
@@ -123,7 +123,13 @@ const ProductList = () => {
             ...data,
             content: undefined
         })
-        let data_ = await apiManager('products', 'list', { ...obj, category_id: router.query?.id });
+        let params = {}
+        if (!router.query?.id || router.query?.id == 'all') {
+            params = { ...obj };
+        } else {
+            params = { ...obj, category_id: router.query?.id }
+        }
+        let data_ = await apiManager('products', 'list', params);
         if (data_) {
             setData(data_);
         }

@@ -33,6 +33,8 @@ const initialState = {
   onResetSetting: () => { },
   // dns data
   onChangeDnsData: () => { },
+  // dns data
+  onChangeShopSetting: () => { },
   // cart data
   onChangeCartData: () => { },
   // current page
@@ -69,6 +71,7 @@ export function SettingsProvider({ children }) {
   const [themeDirection, setThemeDirection] = useState(defaultSettings.themeDirection);
   const [themeColorPresets, setThemeColorPresets] = useState(defaultSettings.themeColorPresets);
   const [themeDnsData, setThemeDnsData] = useState(defaultSettings.themeDnsData);
+  const [themeShopSetting, setThemeShopSetting] = useState(defaultSettings.themeShopSetting);
   const [themeCartData, setThemeCartData] = useState(defaultSettings.themeCartData);
   const [themeCurrentPageObj, setThemeCurrentPageObj] = useState(defaultSettings.themeCurrentPageObj);
   const [themeAuth, setThemeAuth] = useState(defaultSettings.themeAuth);
@@ -107,17 +110,17 @@ export function SettingsProvider({ children }) {
   const getDnsData = async () => {
     try {
       let dns_data = {};
-      const {data:response} = await axios.get(`/api/domain?dns=${process.env.IS_TEST == 1 ? 'localhost' : window.location.host.split(':')[0]}`);
+      const { data: response } = await axios.get(`/api/domain?dns=${process.env.IS_TEST == 1 ? 'localhost' : window.location.host.split(':')[0]}`);
       dns_data = response?.data;
-      console.log(dns_data)
+      dns_data['shop_demo_num'] = dns_data?.setting_obj?.shop_demo_num;
       onChangeDnsData(dns_data);
     } catch (err) {
       console.log(err)
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     console.log(themeColorPresets)
-  },[themeColorPresets])
+  }, [themeColorPresets])
   // Mode
   const onToggleMode = useCallback(() => {
     const value = themeMode === 'light' ? 'dark' : 'light';
@@ -194,6 +197,11 @@ export function SettingsProvider({ children }) {
     setThemeDnsData(dns_data);
     setLocalStorage('themeDnsData', JSON.stringify(dns_data));
   }, [])
+  // setting data
+  const onChangeShopSetting = useCallback((setting) => {
+    setThemeShopSetting(setting);
+    setLocalStorage('themeShopSetting', JSON.stringify(setting));
+  }, [])
   // cart data
   const onChangeCartData = useCallback((cart_data) => {
     setThemeCartData(cart_data);
@@ -223,6 +231,7 @@ export function SettingsProvider({ children }) {
     setThemeDirection(defaultSettings.themeDirection);
     setThemeColorPresets(defaultSettings.themeColorPresets);
     setThemeDnsData(defaultSettings.themeDnsData);
+    setThemeShopSetting(defaultSettings.themeShopSetting);
     setThemeCartData(defaultSettings.themeCartData);
     setThemeCurrentPageObj(defaultSettings.themeCurrentPageObj);
     setThemeAuth(defaultSettings.themeAuth);
@@ -234,6 +243,7 @@ export function SettingsProvider({ children }) {
     removeCookie('themeDirection');
     removeCookie('themeColorPresets');
     removeCookie('themeDnsData');
+    removeCookie('themeShopSetting');
     removeCookie('themeCartData');
     removeCookie('themeCurrentPageObj');
     removeCookie('themeAuth');
@@ -272,6 +282,9 @@ export function SettingsProvider({ children }) {
       // dns data
       themeDnsData,
       onChangeDnsData,
+      // setting
+      themeShopSetting,
+      onChangeShopSetting,
       // cart data
       themeCartData,
       onChangeCartData,
@@ -312,6 +325,9 @@ export function SettingsProvider({ children }) {
       // dns data
       themeDnsData,
       onChangeDnsData,
+      // setting
+      themeShopSetting,
+      onChangeShopSetting,
       // cart data
       themeCartData,
       onChangeCartData,

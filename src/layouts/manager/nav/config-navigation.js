@@ -56,7 +56,7 @@ const navConfig = () => {
             {
               title: '상품관리', path: PATH_MANAGER.product.list,
               children: [
-                { title: '전체', path: PATH_MANAGER.product.list },
+                { title: '전체', path: PATH_MANAGER.product.list + `/all` },
                 ...productCategoryList.map((item) => {
                   return {
                     title: item?.name,
@@ -108,20 +108,22 @@ const navConfig = () => {
         },
       ],
     },
-
-    {
-      items: [
-        {
-          title: '설정관리',
-          path: PATH_MANAGER.brand.root,
-          icon: ICONS.user,
-          children: [
-            { title: '기본설정', path: PATH_MANAGER.brand.edit },
-            { title: '브랜드관리', path: PATH_MANAGER.brand.list },
-          ],
-        },
-      ],
-    },
+    ...(user?.level >= 40 ? [
+      {
+        items: [
+          {
+            title: '설정관리',
+            path: PATH_MANAGER.brand.root,
+            icon: ICONS.user,
+            children: [
+              { title: '기본설정', path: PATH_MANAGER.brand.edit },
+              { title: '쇼핑몰디자인관리', path: PATH_MANAGER.brand.design },
+              { title: '브랜드관리', path: PATH_MANAGER.brand.list },
+            ],
+          },
+        ],
+      },
+    ] : []),
     ...(isDeveloper() ? [
       {
         items: [

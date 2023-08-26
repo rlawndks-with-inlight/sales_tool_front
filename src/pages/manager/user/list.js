@@ -1,6 +1,6 @@
 import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import ManagerTable from "src/sections/manager/table/ManagerTable";
+import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/router";
 import { Row } from "src/components/elements/styled-components";

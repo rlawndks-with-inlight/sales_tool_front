@@ -96,7 +96,6 @@ const BrandEdit = () => {
   }
   const onSave = async () => {
     let result = undefined
-    console.log(item)
     if (item?.id) {//수정
       result = await apiManager('brands', 'update', item);
       if (result) {

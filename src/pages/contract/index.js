@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import AddContract from "src/sections/contract/AddContract";
-import AddSalesMan from "src/sections/contract/AddSalesMan";
-import InsertCustomer from "src/sections/contract/InsertCustomer";
-import SelectItems from "src/sections/contract/SelectItems";
+import AddContract from "src/views/contract/AddContract";
+import AddSalesMan from "src/views/contract/AddSalesMan";
+import InsertCustomer from "src/views/contract/InsertCustomer";
+import SelectItems from "src/views/contract/SelectItems";
 import styled from "styled-components"
 
 const Contract = () => {

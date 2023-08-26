@@ -67,6 +67,7 @@ export const defaultManagerObj = {
   },
   products: {
     product_file: undefined,
+    product_banner_file: undefined,
     name: '',
     price: 0,
     note: '',

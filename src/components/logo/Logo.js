@@ -52,7 +52,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
   }
 
   return (
-    <Link component={NextLink} href="/" sx={{ display: 'contents' }}>
+    <Link component={NextLink} href={other?.link || "/"} sx={{ display: 'contents' }}>
       {logo}
     </Link>
   );

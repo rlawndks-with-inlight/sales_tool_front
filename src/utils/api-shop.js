@@ -11,18 +11,7 @@ export const apiShop = (table, type, params) => {
 
     let base_url = '/api/shop';
     if (type == 'get') {
-        return get(`${base_url}/${table}/${params?.id}`);
-    }
-    if (type == 'list') {
         return get(`${base_url}/${table}`, obj);
     }
-    if (type == 'create') {
-        return post(`${base_url}/${table}`, obj);
-    }
-    if (type == 'update') {
-        return put(`${base_url}/${table}/${params?.id}`, obj);
-    }
-    if (type == 'delete') {
-        return deleteItem(`${base_url}/${table}/${params?.id}`);
-    }
+
 }

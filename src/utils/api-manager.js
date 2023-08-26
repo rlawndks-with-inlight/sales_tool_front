@@ -108,9 +108,7 @@ export const apiManager = (table, type, params) => {
         return deleteItem(`${base_url}/${table}/${params?.id}`);
     }
 }
-export const apiShop = (table, type, params) => {
 
-}
 const settingdeleteImageObj = (obj_) => {//이미지 존재안할시 삭제함
     let obj = obj_;
     let keys = Object.keys(obj);

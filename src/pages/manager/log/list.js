@@ -1,6 +1,6 @@
 import { Card, Chip, Divider, Grid, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
-import ManagerTable from "src/sections/manager/table/ManagerTable";
+import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/router";
 

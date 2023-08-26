@@ -41,7 +41,7 @@ export default function Header({ onOpenNav }) {
 
   const renderContent = (
     <>
-      {isDesktop && isNavHorizontal && <Logo sx={{ mr: 2.5, height:72 }} />}
+      {isDesktop && isNavHorizontal && <Logo link={'/manager/dashboards'} sx={{ mr: 2.5, height:72 }} />}
 
       {!isDesktop && (
         <IconButton onClick={onOpenNav} sx={{ mr: 1, color: 'text.primary' }}>
