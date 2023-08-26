@@ -54,7 +54,7 @@ export default function AccountPopover() {
   const handleLogout = async () => {
     try {
       logout();
-      replace(PATH_AUTH.login);
+      window.location.href = '/login'
       handleClosePopover();
     } catch (error) {
       console.error(error);

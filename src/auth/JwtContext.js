@@ -159,7 +159,6 @@ export function AuthProvider({ children }) {
     dispatch({
       type: 'LOGOUT',
     });
-
   }, []);
 
   const memoizedValue = useMemo(
