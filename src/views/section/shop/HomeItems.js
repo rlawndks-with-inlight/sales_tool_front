@@ -1,6 +1,5 @@
 import styled from 'styled-components'
-import { themeObj } from 'src/components/elements/styled-components'
-import { Items } from 'src/components/elements/shop/common'
+import { Items, themeObj } from 'src/components/elements/styled-components'
 import _ from 'lodash'
 
 const Wrappers = styled.div`

@@ -2,6 +2,7 @@ import { toast } from "react-hot-toast";
 import axios from "./axios";
 import { serialize } from 'object-to-formdata';
 import { getLocalStorage } from "./local-storage";
+import { when } from "jquery";
 
 export const post = async (url, obj) => {
     try {
@@ -93,7 +94,7 @@ export const apiManager = (table, type, params) => {
 
     let base_url = '/api';
     if (type == 'get') {
-        return get(`${base_url}/${table}/${params?.id}`);
+        return get(`${base_url}/${table}/${params?.id ?? ""}`);
     }
     if (type == 'list') {
         return get(`${base_url}/${table}`, obj);
@@ -102,13 +103,35 @@ export const apiManager = (table, type, params) => {
         return post(`${base_url}/${table}`, obj);
     }
     if (type == 'update') {
-        return put(`${base_url}/${table}/${params?.id}`, obj);
+        return put(`${base_url}/${table}/${params?.id ?? ""}`, obj);
     }
     if (type == 'delete') {
         return deleteItem(`${base_url}/${table}/${params?.id}`);
     }
 }
-
+export const uploadMultipleFiles = async (files = []) => {
+    try {
+        let result = undefined;
+        let result_list = [];
+        for (var i = 0; i < files.length; i++) {
+            result_list.push(apiManager('upload/single', 'create', {
+                post_file: files[i],
+            }));
+        }
+        for (var i = 0; i < result_list.length; i++) {
+            await result_list[i];
+        }
+        result = (await when(result_list));
+        let list = [];
+        for (var i = 0; i < (await result).length; i++) {
+            list.push(await result[i]);
+        }
+        return list;
+    } catch (err) {
+        toast.error('파일 등록중 에러')
+        return [];
+    }
+}
 const settingdeleteImageObj = (obj_) => {//이미지 존재안할시 삭제함
     let obj = obj_;
     let keys = Object.keys(obj);

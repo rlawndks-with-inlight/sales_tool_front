@@ -9,7 +9,7 @@ import { base64toFile } from "src/utils/function";
 import _, { constant } from 'lodash'
 import { useSettingsContext } from "src/components/settings";
 import { useRouter } from "next/router";
-import { apiManager } from "src/utils/api-manager";
+import { apiManager, uploadMultipleFiles } from "src/utils/api-manager";
 import { toast } from "react-hot-toast";
 import { useModal } from "src/components/dialog/ModalProvider";
 import HomeBanner from "src/views/section/shop/HomeBanner";
@@ -263,10 +263,8 @@ const MainObjSetting = (props) => {
             }
         }
         if (file_index_list.length > 0) {
-            let file_result = await apiManager('upload/muiltiple', 'create', {
-                post_file:files
-            });
-            if (!(file_result.length > 0)) {
+            let file_result = await uploadMultipleFiles(files);
+            if (!(file_result && file_result.length > 0)) {
                 return;
             }
             for (var i = 0; i < file_index_list.length; i++) {
@@ -328,7 +326,6 @@ const MainObjSetting = (props) => {
                         placeholder="px(픽셀) 단위"
                         type="number"
                         value={item?.style?.margin_top ?? 0}
-                        defaultValue={item?.style?.margin_top ?? 0}
                         onChange={(e) => {
                             let content_list = [...contentList];
                             if (!content_list[idx]?.style) {
@@ -577,7 +574,7 @@ const MainObjSetting = (props) => {
                                                         multiple
                                                         fullWidth
                                                         options={productContent?.content && (productContent?.content ?? []).map(item => { return item?.id })}
-                                                        getOptionLabel={(item_id) => _.find((productContent?.content ?? []), { id: parseInt(item_id) })?.product_name}
+                                                        getOptionLabel={(item_id) => _.find((productContent?.content ?? []), { id: parseInt(item_id) })?.name}
                                                         defaultValue={item.list}
                                                         value={item.list}
                                                         onChange={(e, value) => {
@@ -647,7 +644,7 @@ const MainObjSetting = (props) => {
                                                                 multiple
                                                                 fullWidth
                                                                 options={productContent?.content && (productContent?.content ?? []).map(itm => { return itm?.id })}
-                                                                getOptionLabel={(item_id) => _.find((productContent?.content ?? []), { id: parseInt(item_id) })?.product_name}
+                                                                getOptionLabel={(item_id) => _.find((productContent?.content ?? []), { id: parseInt(item_id) })?.name}
                                                                 defaultValue={itm.list}
                                                                 value={itm.list}
                                                                 onChange={(e, value) => {

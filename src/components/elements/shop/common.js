@@ -104,24 +104,14 @@ export const Item = (props) => {
               router.push(`/shop/item/${item?.id}`)
             }
           }}>
-          <ItemName>{item.product_name}</ItemName>
-          <ItemSubName>{item.product_comment}</ItemSubName>
+          <ItemName>{item.name}</ItemName>
+          <ItemSubName>{item.comment}</ItemSubName>
           <ItemPrice style={{
             marginTop: 'auto'
           }}>
-            {item.product_sale_price < item.product_price &&
-              <>
-                <div style={{ color: 'red', marginRight: '0.25rem' }}>
-                  {commarNumber((item.product_price - item.product_sale_price) * 100 / item.product_price) + '%'}
-                </div>
-              </>}
-            <div>{commarNumber(item.product_sale_price)} 원</div>
-            {item.product_sale_price < item.product_price &&
-              <>
-                <div style={{ textDecoration: 'line-through', marginLeft: '0.25rem', fontSize: themeObj.font_size.size7, color: themeObj.grey[500] }}>
-                  {item.product_sale_price < item.product_price ? commarNumber(item.product_price) : ''}
-                </div>
-              </>}
+           
+            <div>{commarNumber(item.price)} 원</div>
+           
           </ItemPrice>
         </ItemTextContainer>
       </ItemContainer>
@@ -234,7 +224,7 @@ export const HistoryTable = (props) => {
                       sx={{ width: 64, height: 64, borderRadius: 1.5, mr: 2 }}
                     />
                     <Typography noWrap variant="subtitle2" sx={{ maxWidth: 240 }}>
-                      {row.product_name}
+                      {row.name}
                     </Typography>
                   </TableCell>
                   <TableCell>
