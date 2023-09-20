@@ -29,9 +29,14 @@ const ProductEdit = () => {
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState(defaultManagerObj.products);
   const [categoryList, setCategoryList] = useState([]);
+  const [budget, setBudget] = useState({
+  })
   useEffect(() => {
     settingPage();
   }, [])
+  const isCanEditItem = () => {
+    return user?.level >= 40;
+  }
   const settingPage = async () => {
     let category_content = await apiManager('product-categories', 'list');
     if (!(category_content?.content.length > 0)) {
@@ -51,17 +56,23 @@ const ProductEdit = () => {
   }
   const onSave = async () => {
     let result = undefined
-    console.log(item)
-    if (item?.id) {//수정
-      result = await apiManager('products', 'update', item);
-    } else {//추가
-      result = await apiManager('products', 'create', item);
+
+    if (user?.level >= 40) {
+      if (item?.id) {//수정
+        result = await apiManager('products', 'update', item);
+      } else {//추가
+        result = await apiManager('products', 'create', item);
+      }
+    }
+    if (Object.keys(budget)) {
+      if (budget?.budget_price < item.price) {
+        return toast.error('판매가는 정책가보다 작을 수 없습니다.');
+      }
     }
     if (result) {
       toast.success("성공적으로 저장 되었습니다.");
       router.push(`/manager/product`);
     }
-
   }
   return (
     <>
@@ -75,52 +86,29 @@ const ProductEdit = () => {
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                       상품 이미지
                     </Typography>
-                    <Upload file={item.product_file || item.product_img} onDrop={(acceptedFiles) => {
-                      const newFile = acceptedFiles[0];
-                      if (newFile) {
+                    <Upload
+                      disabled={!isCanEditItem()}
+                      file={item.product_file || item.product_img} onDrop={(acceptedFiles) => {
+                        const newFile = acceptedFiles[0];
+                        if (newFile) {
+                          setItem(
+                            {
+                              ...item,
+                              ['product_file']: Object.assign(newFile, {
+                                preview: URL.createObjectURL(newFile),
+                              })
+                            }
+                          );
+                        }
+                      }} onDelete={() => {
                         setItem(
                           {
                             ...item,
-                            ['product_file']: Object.assign(newFile, {
-                              preview: URL.createObjectURL(newFile),
-                            })
+                            ['product_img']: '',
+                            ['product_file']: undefined,
                           }
-                        );
-                      }
-                    }} onDelete={() => {
-                      setItem(
-                        {
-                          ...item,
-                          ['product_img']: '',
-                          ['product_file']: undefined,
-                        }
-                      )
-                    }}
-                    />
-                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                      상품 배너 이미지 (쇼핑몰 배너 이미지)
-                    </Typography>
-                    <Upload file={item.product_banner_file || item.product_banner_img} onDrop={(acceptedFiles) => {
-                      const newFile = acceptedFiles[0];
-                      if (newFile) {
-                        setItem(
-                          {
-                            ...item,
-                            ['product_banner_file']: Object.assign(newFile, {
-                              preview: URL.createObjectURL(newFile),
-                            })
-                          }
-                        );
-                      }
-                    }} onDelete={() => {
-                      setItem(
-                        {
-                          ...item,
-                          ['product_banner_img']: '',
-                          ['product_banner_file']: undefined,
-                        }
-                      )
-                    }}
+                        )
+                      }}
                     />
                   </Stack>
                 </Stack>
@@ -131,14 +119,17 @@ const ProductEdit = () => {
                 <Stack spacing={3}>
                   <FormControl>
                     <InputLabel>상품카테고리</InputLabel>
-                    <Select label='쇼핑몰 데모넘버' value={item?.category_id} onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          category_id: e.target.value
-                        }
-                      )
-                    }}>
+                    <Select
+                      disabled={!isCanEditItem()}
+                      label='쇼핑몰 데모넘버'
+                      value={item?.category_id} onChange={(e) => {
+                        setItem(
+                          {
+                            ...item,
+                            category_id: e.target.value
+                          }
+                        )
+                      }}>
                       {categoryList.map((item, idx) => {
                         return <MenuItem value={item?.id}>{item?.name}</MenuItem>
                       })}
@@ -146,6 +137,7 @@ const ProductEdit = () => {
                   </FormControl>
                   <TextField
                     label='상품명'
+                    disabled={!isCanEditItem()}
                     value={item.name}
                     onChange={(e) => {
                       setItem(
@@ -157,6 +149,7 @@ const ProductEdit = () => {
                     }} />
                   <TextField
                     label='정책가'
+                    disabled={!isCanEditItem()}
                     value={item.price}
                     onChange={(e) => {
                       setItem(
@@ -166,11 +159,23 @@ const ProductEdit = () => {
                         }
                       )
                     }} />
+                  <TextField
+                    label='판매가(책정가)'
+                    value={budget?.budget_price ?? item.price}
+                    onChange={(e) => {
+                      setBudget(
+                        {
+                          ...budget,
+                          ['budget_price']: e.target.value
+                        }
+                      )
+                    }} />
                   <Stack spacing={1}>
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                      비고
+                      상품설명
                     </Typography>
                     <ReactQuill
+                      readOnly={!isCanEditItem()}
                       className="max-height-editor"
                       theme={'snow'}
                       id={'content'}

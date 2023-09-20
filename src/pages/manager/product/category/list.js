@@ -42,33 +42,32 @@ const ProductCategoryList = () => {
         return row['updated_at'] ?? "---"
       }
     },
-    {
-      id: 'edit',
-      label: `수정${user?.level >= 40 ? '/삭제' : ''}`,
-      action: (row) => {
-        return (
-          <>
-            <IconButton>
-              <Icon icon='material-symbols:edit-outline' onClick={() => {
-                router.push(`edit/${row?.id}`)
-              }} />
-            </IconButton>
-            {user?.level >= 40 &&
-              <>
-                <IconButton onClick={() => {
-                  setModal({
-                    func: () => { deleteItem(row?.id) },
-                    icon: 'material-symbols:delete-outline',
-                    title: '정말 삭제하시겠습니까?'
-                  })
-                }}>
-                  <Icon icon='material-symbols:delete-outline' />
-                </IconButton>
-              </>}
-          </>
-        )
-      }
-    },
+    ...(user?.level >= 40 ? [
+      {
+        id: 'edit',
+        label: `수정/삭제`,
+        action: (row) => {
+          return (
+            <>
+              <IconButton>
+                <Icon icon='material-symbols:edit-outline' onClick={() => {
+                  router.push(`edit/${row?.id}`)
+                }} />
+              </IconButton>
+              <IconButton onClick={() => {
+                setModal({
+                  func: () => { deleteItem(row?.id) },
+                  icon: 'material-symbols:delete-outline',
+                  title: '정말 삭제하시겠습니까?'
+                })
+              }}>
+                <Icon icon='material-symbols:delete-outline' />
+              </IconButton>
+            </>
+          )
+        }
+      },
+    ] : []),
   ]
   const router = useRouter();
   const [columns, setColumns] = useState([]);
@@ -168,7 +167,7 @@ const ProductCategoryList = () => {
             columns={columns}
             searchObj={searchObj}
             onChangePage={onChangePage}
-            add_button_text={'상품 카테고리 추가'}
+            add_button_text={user?.level >= 40 ? '상품 카테고리 추가' : ''}
           />
         </Card>
       </Stack>

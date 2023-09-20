@@ -31,7 +31,6 @@ export default function Fab(theme) {
       ...((circularVariant || extendedVariant) && {
         ...((defaultColor || inheritColor) && {
           color: theme.palette.grey[800],
-          boxShadow: theme.customShadows.z8,
           '&:hover': {
             backgroundColor: theme.palette.grey[400],
           },
@@ -84,7 +83,6 @@ export default function Fab(theme) {
     const colorStyle = COLORS.map((color) => ({
       ...(ownerState.color === color && {
         ...((circularVariant || extendedVariant) && {
-          boxShadow: theme.customShadows[color],
           '&:hover': {
             backgroundColor: theme.palette[color].dark,
           },

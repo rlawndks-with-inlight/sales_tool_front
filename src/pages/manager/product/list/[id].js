@@ -52,6 +52,13 @@ const ProductList = () => {
             }
         },
         {
+            id: 'budget_price',
+            label: '판매가(책정가)',
+            action: (row) => {
+                return commarNumber(row?.budget?.budget_price || row['price'])
+            }
+        },
+        {
             id: 'created_at',
             label: '생성시간',
             action: (row) => {
@@ -67,7 +74,7 @@ const ProductList = () => {
         },
         {
             id: 'edit',
-            label: `수정${user?.level >= 40 ? '/삭제' : ''}`,
+            label: `${user?.level >= 40 ? '수정/삭제' : '판매가설정'}`,
             action: (row) => {
                 return (
                     <>
@@ -152,7 +159,7 @@ const ProductList = () => {
                         columns={columns}
                         searchObj={searchObj}
                         onChangePage={onChangePage}
-                        add_button_text={'상품 추가'}
+                        add_button_text={user?.level >= 40 ? '상품 추가' : ''}
                     />
                 </Card>
             </Stack>
