@@ -107,41 +107,15 @@ export const getUserLevelByNumber = (num) => {
   else
     return '잘못된레벨'
 }
-export const getTrxStatusByNumber = (num) => {
+export const getUserStatusByNum = (num) => {
   if (num == 0)
-    return '결제완료'
-  else if (num == 5)
-    return '입고'
-  else if (num == 10)
-    return '출고'
-  else if (num == 15)
-    return '배송중'
-  else if (num == 20)
-    return '배송완료'
+    return '정상'
+  else if (num == 1)
+    return '가입대기'
+  else if (num == 2)
+    return '로그인금지'
   else
-    return '---'
-}
-export const getMyPageParamByNumber = (num) => {
-  if (num == 0)
-    return 'users'
-  else if (num == 10)
-    return 'merchandises'
-  else if (num == 15)
-    return 'users'
-  else if (num == 20)
-    return 'users'
-  else if (num == 30)
-    return 'users'
-  else if (num == 35)
-    return 'operators'
-  else if (num == 40)
-    return 'operators'
-  else if (num == 45)
-    return 'operators'
-  else if (num == 50)
-    return 'operators'
-  else
-    return '잘못된레벨'
+    return '잘못된상태'
 }
 export const useEditPageImg = (img_) => {
   try {

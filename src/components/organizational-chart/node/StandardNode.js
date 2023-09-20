@@ -38,7 +38,6 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
           position: 'relative',
           display: 'inline-flex',
           flexDirection: 'column',
-          textTransform: 'capitalize',
           ...sx,
         }}
       >
@@ -58,6 +57,9 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
 
         <Typography variant="subtitle2">
           {node.user_name}
+        </Typography>
+        <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
+          {node.nickname}
         </Typography>
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
           {getUserLevelByNumber(node.level)}

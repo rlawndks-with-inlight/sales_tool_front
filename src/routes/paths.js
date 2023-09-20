@@ -38,7 +38,7 @@ export const PATH_MANAGER = {
     root: path(ROOTS_MANAGER, '/brand'),
     edit: path(ROOTS_MANAGER, '/brand/edit'),
     list: path(ROOTS_MANAGER, '/brand/list'),
-    design: path(ROOTS_MANAGER, '/brand/design'),
+    shopDesign: path(ROOTS_MANAGER, '/brand/shop-design'),
   },
   salesMan: {
     root: path(ROOTS_MANAGER, '/sales-man'),

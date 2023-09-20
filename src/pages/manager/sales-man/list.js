@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
+import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, MenuItem, Select, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -9,8 +9,10 @@ import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
 import { getUserLevelByNumber } from "src/utils/function";
+import { useAuthContext } from "src/auth/useAuthContext";
 const SalesManList = () => {
   const { setModal } = useModal()
+  const { user } = useAuthContext();
   const defaultColumns = [
     {
       id: 'profile_img',
@@ -76,9 +78,38 @@ const SalesManList = () => {
       }
     },
     {
+      id: 'status',
+      label: '유저상태',
+      action: (row, idx) => {
+
+        return <Select
+          size='small'
+          value={row?.status}
+          disabled={!(user?.level >= 40)}
+          onChange={async (e) => {
+            let result = await apiManager(`users/change-status`, 'update', {
+              id: row?.id,
+              status: e.target.value
+            });
+            if (result) {
+              onChangePage(searchObj)
+            }
+          }}
+
+        >
+          <MenuItem value={'0'}>{'정상'}</MenuItem>
+          <MenuItem value={'1'}>{'가입대기'}</MenuItem>
+          <MenuItem value={'2'}>{'로그인금지'}</MenuItem>
+        </Select>
+      }
+    },
+    {
       id: 'edit_password',
       label: '비밀번호 변경',
       action: (row) => {
+        if (user?.level < row?.level) {
+          return "---"
+        }
         return (
           <>
             <IconButton onClick={() => {
@@ -168,6 +199,10 @@ const SalesManList = () => {
       setDialogObj({
         ...dialogObj,
         changePassword: false
+      })
+      setChangePasswordObj({
+        id: '',
+        user_pw: ''
       })
       toast.success("성공적으로 변경 되었습니다.");
     }

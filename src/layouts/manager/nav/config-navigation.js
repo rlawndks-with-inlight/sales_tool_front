@@ -19,7 +19,6 @@ const ICONS = {
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
 };
-
 const navConfig = () => {
   const { user } = useAuthContext();
 
@@ -117,8 +116,10 @@ const navConfig = () => {
             icon: ICONS.user,
             children: [
               { title: '기본설정', path: PATH_MANAGER.brand.edit },
-              { title: '쇼핑몰디자인관리', path: PATH_MANAGER.brand.design },
-              { title: '브랜드관리', path: PATH_MANAGER.brand.list },
+              { title: '쇼핑몰디자인관리', path: PATH_MANAGER.brand.shopDesign },
+              ...(user?.level >= 50 ? [{
+                title: '브랜드관리', path: PATH_MANAGER.brand.list
+              }] : []),
             ],
           },
         ],

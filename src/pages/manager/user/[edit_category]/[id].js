@@ -13,6 +13,7 @@ import { axiosIns } from "src/utils/axios";
 import { toast } from "react-hot-toast";
 import { useModal } from "src/components/dialog/ModalProvider";
 import dynamic from "next/dynamic";
+import { apiManager } from "src/utils/api-manager";
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
@@ -32,6 +33,7 @@ const UserEdit = () => {
     nickname: '',
     user_pw: '',
     note: '',
+    name: '',
   })
 
   useEffect(() => {
@@ -39,19 +41,19 @@ const UserEdit = () => {
   }, [])
   const settingPage = async () => {
     if (router.query?.edit_category == 'edit') {
-      let user = await getUserByManager({
+      let data = await apiManager('users', 'get', {
         id: router.query.id
       })
-      setItem(user);
+      setItem(data);
     }
     setLoading(false);
   }
   const onSave = async () => {
     let result = undefined
     if (item?.id) {//수정
-      result = await updateUserByManager({ ...item, id: item?.id })
+      result = await apiManager('users', 'update', item);
     } else {//추가
-      result = await addUserByManager({ ...item })
+      result = await apiManager('users', 'create', item);
     }
     if (result) {
       toast.success("성공적으로 저장 되었습니다.");
@@ -138,10 +140,21 @@ const UserEdit = () => {
                       )
                     }} />
                   <TextField
+                    label='이름'
+                    value={item.name}
+                    placeholder=""
+                    onChange={(e) => {
+                      setItem(
+                        {
+                          ...item,
+                          ['name']: e.target.value
+                        }
+                      )
+                    }} />
+                  <TextField
                     label='전화번호'
                     value={item.phone_num}
                     placeholder="하이픈(-) 제외 입력"
-                    type='number'
                     onChange={(e) => {
                       setItem(
                         {

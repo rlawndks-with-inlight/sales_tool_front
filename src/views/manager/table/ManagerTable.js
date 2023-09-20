@@ -171,7 +171,7 @@ export default function ManagerTable(props) {
                     <CustomTableRow key={index}>
                       {columns && columns.map((col, idx) => (
                         <>
-                          <TableCell align="left" sx={{ ...(col?.sx ? col.sx(row) : {}) }}>{col.action(row)}</TableCell>
+                          <TableCell align="left" sx={{ ...(col?.sx ? col.sx(row) : {}) }}>{col.action(row, idx)}</TableCell>
                         </>
                       ))}
                     </CustomTableRow>

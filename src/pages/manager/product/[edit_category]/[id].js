@@ -97,7 +97,7 @@ const ProductEdit = () => {
                       )
                     }}
                     />
-                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                       상품 배너 이미지 (쇼핑몰 배너 이미지)
                     </Typography>
                     <Upload file={item.product_banner_file || item.product_banner_img} onDrop={(acceptedFiles) => {
@@ -173,7 +173,7 @@ const ProductEdit = () => {
                     <ReactQuill
                       className="max-height-editor"
                       theme={'snow'}
-                      id={'note'}
+                      id={'content'}
                       placeholder={''}
                       value={item.note}
                       modules={react_quill_data.modules}
@@ -188,9 +188,9 @@ const ProductEdit = () => {
                               img_src = await img_src.split(`"></p>`);
                               let base64 = img_src[0];
                               img_src = await base64toFile(img_src[0], 'note.png');
-                              const response = await uploadFileByManager({
-                                file: img_src
-                              });
+                              const response = await apiManager('upload/single', 'create', {
+                                post_file: img_src,
+                              })
                               note = await note.replace(base64, response?.url)
                             }
                           }
