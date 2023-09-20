@@ -50,6 +50,7 @@ const ProductEdit = () => {
         id: router.query.id
       })
       console.log(data)
+      setBudget(data?.budget)
       setItem(data);
     }
     setLoading(false);
@@ -68,6 +69,7 @@ const ProductEdit = () => {
       if (budget?.budget_price < item.price) {
         return toast.error('판매가는 정책가보다 작을 수 없습니다.');
       }
+      result = await apiManager('products/budget', 'create', { ...budget, product_id: item.id, user_id: user?.id });
     }
     if (result) {
       toast.success("성공적으로 저장 되었습니다.");
