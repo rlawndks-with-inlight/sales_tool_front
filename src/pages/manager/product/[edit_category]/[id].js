@@ -66,7 +66,7 @@ const ProductEdit = () => {
         result = await apiManager('products', 'create', item);
       }
     }
-    if (Object.keys(budget)) {
+    if (Object.keys(budget??{}).length > 0) {
       if (budget?.budget_price < item.price) {
         return toast.error('판매가는 정책가보다 작을 수 없습니다.');
       }
