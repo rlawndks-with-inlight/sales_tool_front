@@ -104,7 +104,6 @@ margin-top:3rem;
 export const Item = (props) => {
 
   const { item, router } = props;
-  console.log(item)
   const onClickHeart = () => {
     insertWishDataUtil(item, themeWishData, onChangeWishData);
   }

@@ -97,7 +97,7 @@ const SalesManList = () => {
           }}
 
         >
-          <MenuItem value={'0'}>{'정상'}</MenuItem>
+          <MenuItem value={'0'}>{'판매중'}</MenuItem>
           <MenuItem value={'1'}>{'가입대기'}</MenuItem>
           <MenuItem value={'2'}>{'로그인금지'}</MenuItem>
         </Select>
