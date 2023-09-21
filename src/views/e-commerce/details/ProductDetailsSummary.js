@@ -149,7 +149,7 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
             </Typography>
 
             <Typography variant="h5">{name}</Typography>
-            <Typography variant="h7" color={themeObj.grey[500]}>{product_comment}</Typography>
+            <Typography variant="h7" color={themeObj.grey[500]}>{sub_name}</Typography>
 
             <Stack direction="row" alignItems="center" spacing={1}>
               <Rating value={5} precision={0.1} readOnly />

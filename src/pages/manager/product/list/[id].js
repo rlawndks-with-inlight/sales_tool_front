@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Chip, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
+import { Avatar, Button, Card, Chip,  Divider, IconButton, Stack, InputLabel, MenuItem, Select, FormControl, } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -156,12 +156,30 @@ const ProductList = () => {
             onChangePage(searchObj);
         }
     }
-
     return (
         <>
 
             <Stack spacing={3}>
                 <Card>
+                    <Row style={{ padding: '12px', columnGap: '0.5rem' }}>
+                        <FormControl
+                            size="small"
+                        >
+                            <InputLabel>카테고리</InputLabel>
+                            <Select
+                                style={{ flexGrow: 1, width: '240px' }}
+                                label='result 타입'
+                                value={searchObj?.response_result_type}
+                                onChange={(e) => {
+                                    onChangePage({ ...searchObj, response_result_type: e.target.value })
+                                }}>
+                                <MenuItem value={null}>{'전체'}</MenuItem>
+                                <MenuItem value={1}>{'성공'} ({data?.success && (data?.success[0]?.success ?? 0)})</MenuItem>
+                                <MenuItem value={2}>{'실패'} ({data?.fail && (data?.fail[0]?.fail ?? 0)})</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Row>
+                    <Divider />
                     <ManagerTable
                         data={data}
                         columns={columns}

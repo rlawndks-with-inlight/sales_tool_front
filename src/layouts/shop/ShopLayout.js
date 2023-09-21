@@ -16,15 +16,8 @@ const getDemo = (num, common) => {
 const ShopLayout = ({ children }) => {
 
     const router = useRouter();
-    const { themeDnsData, themeShopSetting, onChangeShopSetting } = useSettingsContext();
+    const { themeDnsData, themeShopSetting } = useSettingsContext();
 
-    useEffect(() => {
-        getSettingData();
-    }, [])
-    const getSettingData = async () => {
-        let result = await apiShop('', 'get');
-        onChangeShopSetting(result);
-    }
 
     return (
         <>

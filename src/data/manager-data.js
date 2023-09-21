@@ -55,6 +55,7 @@ export const defaultManagerObj = {
     fax_num: '',
     note: '',
     status: 0,
+    product_sub_imgs:[],
     logo_file: undefined,
     dark_logo_file: undefined,
     favicon_file: undefined,

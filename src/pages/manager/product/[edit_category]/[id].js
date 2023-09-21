@@ -15,8 +15,9 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import { useAuthContext } from "src/auth/useAuthContext";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
-import { apiManager } from "src/utils/api-manager";
+import { apiManager, uploadMultipleFiles } from "src/utils/api-manager";
 import { product_status_list } from "src/data/status-data";
+import _ from "lodash";
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
@@ -30,8 +31,19 @@ const ProductEdit = () => {
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState(defaultManagerObj.products);
   const [categoryList, setCategoryList] = useState([]);
+  const [currentTab, setCurrentTab] = useState(0);
   const [budget, setBudget] = useState({
   })
+  const tab_list = [
+    {
+      value: 0,
+      label: '기본정보'
+    },
+    {
+      value: 1,
+      label: '옵션설정'
+    },
+  ]
   useEffect(() => {
     settingPage();
   }, [])
@@ -50,23 +62,88 @@ const ProductEdit = () => {
       let data = await apiManager('products', 'get', {
         id: router.query.id
       })
-      console.log(data)
       setBudget(data?.budget)
       setItem(data);
     }
     setLoading(false);
   }
-  const onSave = async () => {
-    let result = undefined
+  const handleDropMultiFile = (acceptedFiles) => {
+    let product_sub_imgs = [...item.product_sub_imgs];
+    for (var i = 0; i < acceptedFiles.length; i++) {
+      product_sub_imgs.push({
+        product_sub_file: Object.assign(acceptedFiles[i], {
+          preview: URL.createObjectURL(acceptedFiles[i])
+        }),
+      })
+    }
+    setItem({ ...item, ['product_sub_imgs']: product_sub_imgs })
+  };
 
-    if (user?.level >= 40) {
-      if (item?.id) {//수정
-        result = await apiManager('products', 'update', item);
-      } else {//추가
-        result = await apiManager('products', 'create', item);
+  const handleRemoveFile = (inputFile) => {
+    let product_sub_imgs = [...item.product_sub_imgs];
+    let find_index = _.findIndex(product_sub_imgs.map(img => { return img.product_sub_file }), {
+      path: inputFile.path,
+      preview: inputFile.preview
+    });
+
+    if (find_index < 0) {
+      for (var i = 0; i < product_sub_imgs.length; i++) {
+        if (product_sub_imgs[i]?.product_sub_img == inputFile) {
+          find_index = i;
+        }
       }
     }
-    if (Object.keys(budget??{}).length > 0) {
+    if (find_index >= 0) {
+      if (product_sub_imgs[find_index]?.id) {
+        product_sub_imgs[find_index].is_delete = 1;
+      } else {
+        product_sub_imgs.splice(find_index, 1);
+      }
+      setItem({ ...item, ['product_sub_imgs']: product_sub_imgs })
+    }
+  };
+
+  const handleRemoveAllFiles = () => {
+    let product_sub_imgs = [...item.product_sub_imgs];
+    product_sub_imgs = [];
+    setItem({ ...item, ['product_sub_imgs']: product_sub_imgs })
+  };
+  const onSave = async () => {
+    let result = undefined;
+    let product_sub_imgs = item.product_sub_imgs;
+    let product_sub_imgs_result = [];
+    let files = [];
+    for (var i = 0; i < product_sub_imgs.length; i++) {
+      if (product_sub_imgs[i]?.is_delete != 1) {
+        if (product_sub_imgs[i]?.product_sub_file) {
+          files.push(product_sub_imgs[i]?.product_sub_file)
+        }
+      }
+    }
+    let file_result = await uploadMultipleFiles(files);
+    let file_result_idx = 0;
+    for (var i = 0; i < product_sub_imgs.length; i++) {
+      if (product_sub_imgs[i]?.is_delete != 1) {
+        if (product_sub_imgs[i]?.product_sub_file) {
+          product_sub_imgs_result.push({
+            product_sub_img: file_result[file_result_idx].url,
+          })
+          file_result_idx++;
+        } else {
+          product_sub_imgs_result.push({
+            product_sub_img: product_sub_imgs[i]?.product_sub_img,
+          })
+        }
+      }
+    }
+    if (user?.level >= 40) {
+      if (item?.id) {//수정
+        result = await apiManager('products', 'update', { ...item, product_sub_imgs: product_sub_imgs_result });
+      } else {//추가
+        result = await apiManager('products', 'create', { ...item, product_sub_imgs: product_sub_imgs_result });
+      }
+    }
+    if (Object.keys(budget ?? {}).length > 0) {
       if (budget?.budget_price < item.price) {
         return toast.error('판매가는 정책가보다 작을 수 없습니다.');
       }
@@ -81,164 +158,216 @@ const ProductEdit = () => {
     <>
       {!loading &&
         <>
+          <Row style={{ margin: '0 0 1rem 0', columnGap: '0.5rem' }}>
+            {tab_list.map((tab) => (
+              <Button
+                variant={tab.value == currentTab ? 'contained' : 'outlined'}
+                onClick={() => {
+                  setCurrentTab(tab.value)
+                }}
+              >{tab.label}</Button>
+            ))}
+          </Row>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Card sx={{ p: 2, height: '100%' }}>
-                <Stack spacing={3}>
-                  <Stack spacing={1}>
-                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                      상품 이미지
-                    </Typography>
-                    <Upload
-                      disabled={!isCanEditItem()}
-                      file={item.product_file || item.product_img} onDrop={(acceptedFiles) => {
-                        const newFile = acceptedFiles[0];
-                        if (newFile) {
+            {currentTab == 0 &&
+              <>
+                <Grid item xs={12} md={6}>
+                  <Card sx={{ p: 2, height: '100%' }}>
+                    <Stack spacing={3}>
+                      <Stack spacing={1}>
+                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                          상품 이미지
+                        </Typography>
+                        <Upload
+                          disabled={!isCanEditItem()}
+                          file={item.product_file || item.product_img} onDrop={(acceptedFiles) => {
+                            const newFile = acceptedFiles[0];
+                            if (newFile) {
+                              setItem(
+                                {
+                                  ...item,
+                                  ['product_file']: Object.assign(newFile, {
+                                    preview: URL.createObjectURL(newFile),
+                                  })
+                                }
+                              );
+                            }
+                          }} onDelete={() => {
+                            setItem(
+                              {
+                                ...item,
+                                ['product_img']: '',
+                                ['product_file']: undefined,
+                              }
+                            )
+                          }}
+                        />
+                      </Stack>
+                      <Stack spacing={1}>
+                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                          개별이미지등록 (여러장 업로드)
+                        </Typography>
+                        <Upload
+                          multiple
+                          thumbnail={true}
+                          files={item.product_sub_imgs.map(img => {
+                            if (img.is_delete == 1) {
+                              return undefined;
+                            }
+                            if (img.product_sub_img) {
+                              return img.product_sub_img
+                            } else {
+                              return img.product_sub_file
+                            }
+                          }).filter(e => e)}
+                          onDrop={(acceptedFiles) => {
+                            handleDropMultiFile(acceptedFiles)
+                          }}
+                          onRemove={(inputFile) => {
+                            handleRemoveFile(inputFile)
+                          }}
+                          onRemoveAll={() => {
+                            handleRemoveAllFiles();
+                          }}
+                          fileExplain={{
+                            width: ''//파일 사이즈 설명
+                          }}
+                          imageSize={{ //썸네일 사이즈
+                            width: 200,
+                            height: 200
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card sx={{ p: 2, height: '100%' }}>
+                    <Stack spacing={3}>
+                      <FormControl>
+                        <InputLabel>상품카테고리</InputLabel>
+                        <Select
+                          disabled={!isCanEditItem()}
+                          label='쇼핑몰 데모넘버'
+                          value={item?.category_id} onChange={(e) => {
+                            setItem(
+                              {
+                                ...item,
+                                category_id: e.target.value
+                              }
+                            )
+                          }}>
+                          {categoryList.map((item, idx) => {
+                            return <MenuItem value={item?.id}>{item?.name}</MenuItem>
+                          })}
+                        </Select>
+                      </FormControl>
+                      <TextField
+                        label='상품명'
+                        disabled={!isCanEditItem()}
+                        value={item.name}
+                        onChange={(e) => {
                           setItem(
                             {
                               ...item,
-                              ['product_file']: Object.assign(newFile, {
-                                preview: URL.createObjectURL(newFile),
-                              })
+                              ['name']: e.target.value
                             }
-                          );
-                        }
-                      }} onDelete={() => {
-                        setItem(
-                          {
-                            ...item,
-                            ['product_img']: '',
-                            ['product_file']: undefined,
-                          }
-                        )
-                      }}
-                    />
-                  </Stack>
-                </Stack>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Card sx={{ p: 2, height: '100%' }}>
-                <Stack spacing={3}>
-                  <FormControl>
-                    <InputLabel>상품카테고리</InputLabel>
-                    <Select
-                      disabled={!isCanEditItem()}
-                      label='쇼핑몰 데모넘버'
-                      value={item?.category_id} onChange={(e) => {
-                        setItem(
-                          {
-                            ...item,
-                            category_id: e.target.value
-                          }
-                        )
-                      }}>
-                      {categoryList.map((item, idx) => {
-                        return <MenuItem value={item?.id}>{item?.name}</MenuItem>
-                      })}
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    label='상품명'
-                    disabled={!isCanEditItem()}
-                    value={item.name}
-                    onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          ['name']: e.target.value
-                        }
-                      )
-                    }} />
-                  <TextField
-                    label='상품서브명'
-                    disabled={!isCanEditItem()}
-                    value={item.sub_name}
-                    onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          ['sub_name']: e.target.value
-                        }
-                      )
-                    }} />
-                  <TextField
-                    label='정책가'
-                    disabled={!isCanEditItem()}
-                    value={item.price}
-                    onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          ['price']: e.target.value
-                        }
-                      )
-                    }} />
-                  <TextField
-                    label='판매가(책정가)'
-                    value={budget?.budget_price ?? item.price}
-                    onChange={(e) => {
-                      setBudget(
-                        {
-                          ...budget,
-                          ['budget_price']: e.target.value
-                        }
-                      )
-                    }} />
-                  <FormControl>
-                    <InputLabel>상태</InputLabel>
-                    <Select label='상태' value={item.status} onChange={(e) => {
-                      setItem(
-                        {
-                          ...item,
-                          ['status']: e.target.value
-                        }
-                      )
-                    }}>
-                      {product_status_list.map((itm, idx) => {
-                        return <MenuItem value={idx}>{itm.title}</MenuItem>
-                      })}
-                    </Select>
-                  </FormControl>
-                  <Stack spacing={1}>
-                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                      상품설명
-                    </Typography>
-                    <ReactQuill
-                      readOnly={!isCanEditItem()}
-                      className="max-height-editor"
-                      theme={'snow'}
-                      id={'content'}
-                      placeholder={''}
-                      value={item.note}
-                      modules={react_quill_data.modules}
-                      formats={react_quill_data.formats}
-                      onChange={async (e) => {
-                        let note = e;
-                        if (e.includes('<img src="') && e.includes('base64,')) {
-                          let base64_list = e.split('<img src="');
-                          for (var i = 0; i < base64_list.length; i++) {
-                            if (base64_list[i].includes('base64,')) {
-                              let img_src = base64_list[i];
-                              img_src = await img_src.split(`"></p>`);
-                              let base64 = img_src[0];
-                              img_src = await base64toFile(img_src[0], 'note.png');
-                              const response = await apiManager('upload/single', 'create', {
-                                post_file: img_src,
-                              })
-                              note = await note.replace(base64, response?.url)
+                          )
+                        }} />
+                      <TextField
+                        label='상품서브명'
+                        disabled={!isCanEditItem()}
+                        value={item.sub_name}
+                        onChange={(e) => {
+                          setItem(
+                            {
+                              ...item,
+                              ['sub_name']: e.target.value
                             }
-                          }
-                        }
-                        setItem({
-                          ...item,
-                          ['note']: note
-                        });
-                      }} />
-                  </Stack>
-                </Stack>
-              </Card>
-            </Grid>
+                          )
+                        }} />
+                      <TextField
+                        label='정책가'
+                        disabled={!isCanEditItem()}
+                        value={item.price}
+                        onChange={(e) => {
+                          setItem(
+                            {
+                              ...item,
+                              ['price']: e.target.value
+                            }
+                          )
+                        }} />
+                      <TextField
+                        label='판매가(책정가)'
+                        value={budget?.budget_price ?? item.price}
+                        onChange={(e) => {
+                          setBudget(
+                            {
+                              ...budget,
+                              ['budget_price']: e.target.value
+                            }
+                          )
+                        }} />
+                      <FormControl>
+                        <InputLabel>상태</InputLabel>
+                        <Select label='상태' value={item.status} onChange={(e) => {
+                          setItem(
+                            {
+                              ...item,
+                              ['status']: e.target.value
+                            }
+                          )
+                        }}>
+                          {product_status_list.map((itm, idx) => {
+                            return <MenuItem value={idx}>{itm.title}</MenuItem>
+                          })}
+                        </Select>
+                      </FormControl>
+                      <Stack spacing={1}>
+                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                          상품설명
+                        </Typography>
+                        <ReactQuill
+                          readOnly={!isCanEditItem()}
+                          className="max-height-editor"
+                          theme={'snow'}
+                          id={'content'}
+                          placeholder={''}
+                          value={item.note}
+                          modules={react_quill_data.modules}
+                          formats={react_quill_data.formats}
+                          onChange={async (e) => {
+                            let note = e;
+                            if (e.includes('<img src="') && e.includes('base64,')) {
+                              let base64_list = e.split('<img src="');
+                              for (var i = 0; i < base64_list.length; i++) {
+                                if (base64_list[i].includes('base64,')) {
+                                  let img_src = base64_list[i];
+                                  img_src = await img_src.split(`"></p>`);
+                                  let base64 = img_src[0];
+                                  img_src = await base64toFile(img_src[0], 'note.png');
+                                  const response = await apiManager('upload/single', 'create', {
+                                    post_file: img_src,
+                                  })
+                                  note = await note.replace(base64, response?.url)
+                                }
+                              }
+                            }
+                            setItem({
+                              ...item,
+                              ['note']: note
+                            });
+                          }} />
+                      </Stack>
+                    </Stack>
+                  </Card>
+                </Grid>
+              </>}
+            {currentTab == 1 &&
+              <>
+
+              </>}
             <Grid item xs={12} md={12}>
               <Card sx={{ p: 3 }}>
                 <Stack spacing={1} style={{ display: 'flex' }}>

@@ -48,11 +48,9 @@ const Demo1 = (props) => {
     if (Object.keys(data).length == 0) {
       data = await apiShop(`/product/${router.query?.id}`, 'get')
       console.log(data)
-      data['sub_images'] = [];
-      for (var i = 0; i < 5; i++) {
-        data['sub_images'].push(data?.product_img)
-      }
-      data['images'] = data['sub_images'];
+      data['images'] = [];
+      data['images'].push(data?.product_img)
+      data['images'] = [...data['images'],...(data?.product_sub_imgs??[]).map(img=>{return img?.product_sub_img})];
     }
 
     setProduct(data);
@@ -62,10 +60,10 @@ const Demo1 = (props) => {
     {
       value: 'description',
       label: '상품설명',
-      component: product?.product_description ?
+      component: product?.note ?
         <ReactQuill
           className='none-padding'
-          value={product?.product_description ?? `<body></body>`}
+          value={product?.note ?? `<body></body>`}
           readOnly={true}
           theme={"bubble"}
           bounds={'.app'}

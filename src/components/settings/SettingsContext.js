@@ -5,7 +5,7 @@ import { defaultSettings } from './config-setting';
 import { defaultPreset, getPresets, presetsOption } from './presets';
 import { useTheme } from '@emotion/react';
 import { deleteLocalStorage, getLocalStorage, setLocalStorage } from 'src/utils/local-storage';
-import { getShopCategoriesByUser } from 'src/utils/api-shop';
+import { apiShop, getShopCategoriesByUser } from 'src/utils/api-shop';
 import axios from 'axios';
 // ----------------------------------------------------------------------
 
@@ -116,6 +116,7 @@ export function SettingsProvider({ children }) {
       setThemeCurrentPageObj(currentPageObj);
       setThemeCartData(cartData);
       setThemeWishData(wishData);
+      getSettingData();
       getDnsData();
     }
   }, []);
@@ -126,10 +127,15 @@ export function SettingsProvider({ children }) {
       dns_data = response?.data;
       dns_data['shop_demo_num'] = dns_data?.setting_obj?.shop_demo_num;
       onChangeDnsData(dns_data);
+
     } catch (err) {
       console.log(err)
     }
   }
+  const getSettingData = async () => {
+    let result = await apiShop('', 'get');
+    onChangeShopSetting(result);
+}
   // Mode
   const onToggleMode = useCallback(() => {
     const value = themeMode === 'light' ? 'dark' : 'light';
