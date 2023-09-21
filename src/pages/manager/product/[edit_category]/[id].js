@@ -16,6 +16,7 @@ import axios from "axios";
 import { useAuthContext } from "src/auth/useAuthContext";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
+import { product_status_list } from "src/data/status-data";
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
@@ -150,6 +151,18 @@ const ProductEdit = () => {
                       )
                     }} />
                   <TextField
+                    label='상품서브명'
+                    disabled={!isCanEditItem()}
+                    value={item.sub_name}
+                    onChange={(e) => {
+                      setItem(
+                        {
+                          ...item,
+                          ['sub_name']: e.target.value
+                        }
+                      )
+                    }} />
+                  <TextField
                     label='정책가'
                     disabled={!isCanEditItem()}
                     value={item.price}
@@ -172,6 +185,21 @@ const ProductEdit = () => {
                         }
                       )
                     }} />
+                  <FormControl>
+                    <InputLabel>상태</InputLabel>
+                    <Select label='상태' value={item.status} onChange={(e) => {
+                      setItem(
+                        {
+                          ...item,
+                          ['status']: e.target.value
+                        }
+                      )
+                    }}>
+                      {product_status_list.map((itm, idx) => {
+                        return <MenuItem value={idx}>{itm.title}</MenuItem>
+                      })}
+                    </Select>
+                  </FormControl>
                   <Stack spacing={1}>
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                       상품설명

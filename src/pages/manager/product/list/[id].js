@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
+import { Avatar, Button, Card, Chip, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -11,6 +11,7 @@ import { apiManager } from "src/utils/api-manager";
 import { useAuthContext } from "src/auth/useAuthContext";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { commarNumber } from "src/utils/function";
+import { product_status_list } from "src/data/status-data";
 
 const ProductList = () => {
     const { setModal } = useModal()
@@ -56,6 +57,13 @@ const ProductList = () => {
             label: '판매가(책정가)',
             action: (row) => {
                 return commarNumber(row?.budget?.budget_price || row['price'])
+            }
+        },
+        {
+            id: 'status',
+            label: '상태',
+            action: (row) => {
+                return <Chip label={product_status_list[row?.status].title} variant="soft" color={product_status_list[row?.status].chip_color} />
             }
         },
         {

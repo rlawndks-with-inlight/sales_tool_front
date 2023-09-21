@@ -27,6 +27,7 @@ import {
   DialogActions,
   RadioGroup,
   Paper,
+  Chip,
 } from '@mui/material';
 // routes
 // utils
@@ -52,6 +53,7 @@ import { formatCreditCardNumber, formatExpirationDate } from 'src/utils/formatCa
 import { useModal } from "src/components/dialog/ModalProvider";
 import { onPayItemByCard } from 'src/utils/api-shop';
 import { insertCartDataUtil, selectItemOptionUtil } from 'src/utils/shop-util';
+import { product_status_list } from 'src/data/status-data';
 // ----------------------------------------------------------------------
 
 ProductDetailsSummary.propTypes = {
@@ -98,6 +100,7 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
     product_price = 0,
     sizes = [],
     price,
+    budget,
     cover,
     status,
     colors = [],
@@ -116,230 +119,14 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
     let pay_list = test_pay_list;
     setPayList(pay_list)
   }, [])
-  const isMaxQuantity =
-    cart.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
-  const handleAddCart = async () => {
-    let result = insertCartDataUtil(product, selectProduct, themeCartData, onChangeCartData);
-    if (result) {
-      toast.success("장바구니에 성공적으로 추가되었습니다.")
-    }
-  };
+
   const onSelectOption = (group, option) => {
     let select_product = selectItemOptionUtil(group, option, selectProduct);
     setSelectProduct(select_product);
   }
-  const [buyStep, setBuyStep] = useState(0);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const onBuyNow = async () => {
-    console.log(payData);
-    let result = await onPayItemByCard(payData);
-    console.log(result)
-  }
-  const onBuyDialogClose = () => {
-    setBuyOpen(false);
-    setBuyStep(0);
-  }
-  const onCreateBilling = (item) => {
-    setSelectAddress(item);
-    setPayData({
-      ...payData,
-      ['addr']: item?.address
-    })
-    setBuyStep(1);
-  }
+
   return (
     <>
-      <Dialog
-        open={buyOpen}
-        onClose={() => {
-          onBuyDialogClose();
-        }}
-      >
-        <DialogTitle>바로구매</DialogTitle>
-        <DialogContent>
-          <CheckoutSteps activeStep={buyStep} steps={STEPS} />
-          {buyStep == 0 &&
-            <>
-              {addressList.length > 0 ?
-                <>
-                  {addressList.map((item, idx) => (
-                    <>
-                      <AddressItem
-                        key={idx}
-                        item={item}
-                        onCreateBilling={() => onCreateBilling(item)}
-                      />
-                    </>
-                  ))}
-                </>
-                :
-                <>
-                  <EmptyContent
-                    title="배송지가 없습니다."
-                    description="배송지를 추가해 주세요."
-                    img=""
-                  />
-                </>}
-            </>}
-          {buyStep == 1 &&
-            <>
-              <RadioGroup row>
-                <Stack spacing={3} sx={{ width: 1 }}>
-                  {payList.map((item, idx) => (
-                    <>
-                      <Paper
-                        variant="outlined"
-                        sx={{ padding: '1rem', cursor: 'pointer' }}
-                        onClick={() => {
-                          if (idx == 0) {
-                            setBuyStep(2);
-                          }
-                        }}
-                      >
-                        <Box sx={{ ml: 1 }}>
-                          <Typography variant="subtitle2">{item.title}</Typography>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            {item.description}
-                          </Typography>
-                        </Box>
-                      </Paper>
-                    </>
-                  ))}
-                </Stack>
-              </RadioGroup>
-            </>}
-          {buyStep == 2 &&
-            <>
-              <Stack spacing={2}>
-                <Cards cvc={''} focused={cardFucus} expiry={payData.yymm} name={payData.buyer_name} number={payData.card_num} />
-                <Stack>
-                  <TextField
-                    size='small'
-                    label='카드 번호'
-                    value={payData.card_num}
-                    placeholder='0000 0000 0000 0000'
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      value = formatCreditCardNumber(value, Payment)
-                      setPayData({
-                        ...payData,
-                        ['card_num']: value
-                      })
-                    }}
-                  />
-                </Stack>
-                <Stack>
-                  <TextField
-                    size='small'
-                    label='카드 사용자명'
-                    value={payData.buyer_name}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      setPayData({
-                        ...payData,
-                        ['buyer_name']: value
-                      })
-                    }}
-                  />
-                </Stack>
-                <Stack>
-                  <TextField
-                    size='small'
-                    label='만료일'
-                    value={payData.yymm}
-                    inputProps={{ maxLength: '5' }}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      value = formatExpirationDate(value, Payment)
-                      setPayData({
-                        ...payData,
-                        ['yymm']: value
-                      })
-                    }}
-                  />
-                </Stack>
-                <Stack>
-                  <TextField
-                    size='small'
-                    label='카드비밀번호 앞 두자리'
-                    value={payData.card_pw}
-                    type='password'
-                    inputProps={{ maxLength: '2' }}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      setPayData({
-                        ...payData,
-                        ['card_pw']: value
-                      })
-                    }}
-                  />
-                </Stack>
-                <Stack>
-                  <TextField
-                    size='small'
-                    label='구매자 휴대폰번호'
-                    value={payData.buyer_phone}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      setPayData({
-                        ...payData,
-                        ['buyer_phone']: value
-                      })
-                    }}
-                  />
-                </Stack>
-                <Stack>
-                  <TextField
-                    size='small'
-                    label='주민번호 또는 사업자등록번호'
-                    value={payData.auth_num}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      setPayData({
-                        ...payData,
-                        ['auth_num']: value
-                      })
-                    }}
-                  />
-                </Stack>
-                {!user &&
-                  <>
-                    <Stack>
-                      <TextField
-                        size='small'
-                        label='비회원주문 비밀번호'
-                        type='password'
-                        value={payData.password}
-                        onChange={(e) => {
-                          let value = e.target.value;
-                          setPayData({
-                            ...payData,
-                            ['password']: value
-                          })
-                        }}
-                      />
-                    </Stack>
-                  </>}
-                <Stack>
-                  <Button variant='contained' onClick={() => {
-                    setModal({
-                      func: () => { onBuyNow() },
-                      icon: 'ion:card-outline',
-                      title: '정말로 결제 하시겠습니까?'
-                    })
-                  }}>
-                    결제하기
-                  </Button>
-                </Stack>
-              </Stack>
-            </>}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onBuyDialogClose} color="inherit">
-            나가기
-          </Button>
-        </DialogActions>
-      </Dialog>
       <form>
         <Stack
           spacing={3}
@@ -358,7 +145,7 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
                 color: status === 'sale' ? 'error.main' : 'info.main',
               }}
             >
-              {status}
+              <Chip label={product_status_list[status].title} variant="soft" color={product_status_list[status].chip_color} />
             </Typography>
 
             <Typography variant="h5">{name}</Typography>
@@ -379,7 +166,7 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
                   {fCurrency(product_price)}
                 </Box>
               )}
-              {commarNumber(price)} 원
+              {commarNumber(budget?.budget_price || price)} 원
             </Typography>
           </Stack>
           <Divider sx={{ borderStyle: 'dashed' }} />
@@ -502,19 +289,24 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
           <Stack direction="row" spacing={2}>
             <Button
               fullWidth
-              disabled={isMaxQuantity}
+              disabled={!(status == 0)}
               size="large"
               color="warning"
               variant="contained"
               startIcon={<Iconify icon="ic:round-add-shopping-cart" />}
               onClick={() => { }}
               sx={{ whiteSpace: 'nowrap' }}
+
             >
               상품추가
             </Button>
-            <Button fullWidth size="large" variant="contained" onClick={() => {
+            <Button
+              fullWidth
+              size="large"
+              disabled={!(status == 0)}
+              variant="contained" onClick={() => {
 
-            }}>
+              }}>
               계약서작성
             </Button>
           </Stack>

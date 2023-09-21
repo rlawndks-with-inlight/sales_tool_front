@@ -41,6 +41,7 @@ export const react_quill_data = {
 export const defaultManagerObj = {
   brands: {
     name: '',
+    sub_name:'',
     dns: '',
     og_description: '',
     company_name: '',
@@ -53,6 +54,7 @@ export const defaultManagerObj = {
     phone_num: '',
     fax_num: '',
     note: '',
+    status: 0,
     logo_file: undefined,
     dark_logo_file: undefined,
     favicon_file: undefined,

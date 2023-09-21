@@ -104,7 +104,7 @@ margin-top:3rem;
 export const Item = (props) => {
 
   const { item, router } = props;
- 
+  console.log(item)
   const onClickHeart = () => {
     insertWishDataUtil(item, themeWishData, onChangeWishData);
   }
@@ -129,11 +129,11 @@ export const Item = (props) => {
             }
           }}>
           <ItemName>{item.name}</ItemName>
-          <ItemSubName>지금 만나보세요!</ItemSubName>
+          <ItemSubName>{item.sub_name}</ItemSubName>
           <ItemPrice style={{
             marginTop: 'auto'
           }}>
-            <div>{commarNumber(item.price)} 원</div>
+            <div>{commarNumber(item?.budget?.budget_price || item.price)} 원</div>
           </ItemPrice>
         </ItemTextContainer>
       </ItemContainer>

@@ -1,4 +1,4 @@
-import { Card, Chip, Divider, Grid, IconButton, Stack, TextField, Tooltip } from "@mui/material";
+import { Card, Chip, Divider, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -139,6 +139,7 @@ const LogList = () => {
     s_dt: '',
     e_dt: '',
     search: '',
+
   })
   useEffect(() => {
     pageSetting();
@@ -168,13 +169,25 @@ const LogList = () => {
   return (
     <>
       <Stack spacing={3}>
-        <Row style={{ padding: '12px', columnGap: '0.5rem' }}>
-          <div>성공: {data?.success && (data?.success[0]?.success ?? 0)}</div>
-          <div>실패: {data?.fail && (data?.fail[0]?.fail ?? 0)}</div>
-        </Row>
         <Card>
-          <Stack spacing={1} sx={{ p: 1.5 }}>
-          </Stack>
+          <Row style={{ padding: '12px', columnGap: '0.5rem' }}>
+            <FormControl
+              size="small"
+            >
+              <InputLabel>result 타입</InputLabel>
+              <Select
+                style={{ flexGrow: 1, width: '240px' }}
+                label='result 타입'
+                value={searchObj?.response_result_type}
+                onChange={(e) => {
+                  onChangePage({ ...searchObj, response_result_type: e.target.value })
+                }}>
+                <MenuItem value={null}>{'전체'}</MenuItem>
+                <MenuItem value={1}>{'성공'} ({data?.success && (data?.success[0]?.success ?? 0)})</MenuItem>
+                <MenuItem value={2}>{'실패'} ({data?.fail && (data?.fail[0]?.fail ?? 0)})</MenuItem>
+              </Select>
+            </FormControl>
+          </Row>
           <Divider />
           <ManagerTable
             data={data}
