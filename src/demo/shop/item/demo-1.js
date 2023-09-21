@@ -47,10 +47,9 @@ const Demo1 = (props) => {
     let data = { ...product };
     if (Object.keys(data).length == 0) {
       data = await apiShop(`/product/${router.query?.id}`, 'get')
-      console.log(data)
       data['images'] = [];
       data['images'].push(data?.product_img)
-      data['images'] = [...data['images'],...(data?.product_sub_imgs??[]).map(img=>{return img?.product_sub_img})];
+      data['images'] = [...data['images'], ...(data?.product_sub_imgs ?? []).map(img => { return img?.product_sub_img })];
     }
 
     setProduct(data);
