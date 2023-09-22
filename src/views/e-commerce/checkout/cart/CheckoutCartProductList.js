@@ -37,7 +37,6 @@ export default function CheckoutCartProductList({
       <Scrollbar>
         <Table sx={{ minWidth: 720 }}>
           <TableHeadCustom headLabel={TABLE_HEAD} />
-
           <TableBody>
             {products.map((row) => (
               <CheckoutCartProduct

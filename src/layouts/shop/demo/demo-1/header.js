@@ -194,7 +194,7 @@ const Header = () => {
 
     const router = useRouter();
     const theme = useTheme();
-    const { themeMode, onToggleMode, themeShopSetting } = useSettingsContext();
+    const { themeMode, onToggleMode, themeShopSetting, themeCartData } = useSettingsContext();
     const { user, logout } = useAuthContext();
     const authList = [
         {
@@ -408,12 +408,12 @@ const Header = () => {
                                     sx={iconButtonStyle}
                                     onClick={() => {
                                         if (user) {
-                                        } else {
-                                        }
+                                        router.push(`/shop/contract`);
+                                        } 
                                     }}
                                 >
-                                    <Badge badgeContent={3} color="error">
-                                        <Icon icon={'basil:shopping-bag-outline'} fontSize={'1.8rem'} color={themeMode == 'dark' ? '#fff' : '#000'} />
+                                    <Badge badgeContent={themeCartData.length} color="error">
+                                        <Icon icon={'basil:document-outline'} fontSize={'1.8rem'} color={themeMode == 'dark' ? '#fff' : '#000'} />
                                     </Badge>
                                 </IconButton>
                                 <IconButton
@@ -501,12 +501,12 @@ const Header = () => {
                                     sx={iconButtonStyle}
                                     onClick={() => {
                                         if (user) {
-                                        } else {
+                                            router.push(`/shop/contract`);
                                         }
                                     }}
                                 >
-                                    <Badge badgeContent={3} color="error">
-                                        <Icon icon={'basil:shopping-bag-outline'} fontSize={'1.8rem'} color={themeMode == 'dark' ? '#fff' : '#000'} />
+                                    <Badge badgeContent={themeCartData.length} color="error">
+                                        <Icon icon={'basil:document-outline'} fontSize={'1.8rem'} color={themeMode == 'dark' ? '#fff' : '#000'} />
                                     </Badge>
                                 </IconButton>
                                 <IconButton
