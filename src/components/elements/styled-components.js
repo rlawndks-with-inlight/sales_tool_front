@@ -1,10 +1,11 @@
 import styled from 'styled-components'
 import { useSettingsContext } from '../settings'
 import { useState } from 'react'
-import { IconButton } from '@mui/material'
+import { Chip, IconButton } from '@mui/material'
 import { Icon } from '@iconify/react'
 import { commarNumber } from 'src/utils/function'
 import { useRouter } from 'next/router'
+import { product_status_list } from 'src/data/status-data'
 
 export const themeObj = {
   grey: {
@@ -72,7 +73,7 @@ const ItemPrice = styled.div`
 margin-top:0.5rem;
 font-size:${themeObj.font_size.size7};
 display:flex;
-align-items:end;
+align-items:center;
 flex-wrap:wrap;
 `
 const ItemContainer = styled.div`
@@ -130,9 +131,10 @@ export const Item = (props) => {
           <ItemName>{item.name}</ItemName>
           <ItemSubName>{item.sub_name}</ItemSubName>
           <ItemPrice style={{
-            marginTop: 'auto'
+            marginTop: 'auto',
           }}>
             <div>{commarNumber(item?.budget?.budget_price || item.price)} 원</div>
+            <Chip label={product_status_list[item.status].title} variant="soft" color={product_status_list[item.status].chip_color} style={{ marginLeft: 'auto' }} />
           </ItemPrice>
         </ItemTextContainer>
       </ItemContainer>
@@ -201,7 +203,7 @@ export const Items = (props) => {
           <ItemsContainer>
             {items && items.map((item, idx) => {
               return <ItemWrapper>
-                <Item item={item} router={router}/>
+                <Item item={item} router={router} />
               </ItemWrapper>
             })}
           </ItemsContainer>
