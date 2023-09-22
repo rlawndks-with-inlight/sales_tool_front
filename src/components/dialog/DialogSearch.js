@@ -44,7 +44,11 @@ const DialogSearch = (props) => {
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
   return (
-    <Dialog fullScreen onClose={handleClose} open={open}>
+    <Dialog fullScreen onClose={handleClose} open={open} PaperProps={{
+      style: {
+        margin: '0'
+      }
+    }}>
       <DialogTitle id='full-screen-dialog-title' style={{ paddingBottom: '2rem' }}>
         <Typography variant='h6' component='span'>
           <div style={{ display: 'flex' }}>

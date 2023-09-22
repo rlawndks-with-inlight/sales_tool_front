@@ -413,19 +413,6 @@ const Header = () => {
                                     }}
                                 >
                                     <Badge badgeContent={3} color="error">
-                                        <Icon icon={'basil:heart-outline'} fontSize={'2rem'} color={themeMode == 'dark' ? '#fff' : '#000'} />
-                                    </Badge>
-                                </IconButton>
-
-                                <IconButton
-                                    sx={iconButtonStyle}
-                                    onClick={() => {
-                                        if (user) {
-                                        } else {
-                                        }
-                                    }}
-                                >
-                                    <Badge badgeContent={3} color="error">
                                         <Icon icon={'basil:shopping-bag-outline'} fontSize={'1.8rem'} color={themeMode == 'dark' ? '#fff' : '#000'} />
                                     </Badge>
                                 </IconButton>
@@ -552,6 +539,7 @@ const Header = () => {
                                     <>
                                         <div style={{ position: 'relative' }} className={`menu-${item1?.id}`}>
                                             <CategoryMenu borderColor={themeMode == 'dark' ? '#fff' : '#000'} onClick={() => {
+                                                router.push(`/shop/items?category_id=${item1?.id}`);
                                             }}>
                                                 <div>{item1.name}</div>
                                             </CategoryMenu>
@@ -599,6 +587,7 @@ const Header = () => {
                                             onHoverCategory(`hover_${item1?.id}`)
                                         }}
                                             onClick={() => {
+                                                router.push(`/shop/items?category_id=${item1?.id}`);
                                             }}
                                         >
                                             <div>{item1.name}</div>
@@ -633,11 +622,12 @@ const Header = () => {
                 }}
                     className="none-scroll"
                 >
-                    <ColumnMenuTitle>쇼핑 카테고리</ColumnMenuTitle>
+                    <ColumnMenuTitle>상품 카테고리</ColumnMenuTitle>
 
                     {categories.map((item, idx) => (
                         <>
                             <ColumnMenuContent onClick={() => {
+                                router.push(`/shop/items?category_id=${item?.id}`);
                                 setSideMenuOpen(false);
                             }} style={{ paddingLeft: '1rem' }}>{item.name}</ColumnMenuContent>
                         </>
