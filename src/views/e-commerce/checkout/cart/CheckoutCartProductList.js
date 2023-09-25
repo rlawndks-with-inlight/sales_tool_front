@@ -10,10 +10,9 @@ import CheckoutCartProduct from './CheckoutCartProduct';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'product', label: 'Product' },
-  { id: 'price', label: 'Price' },
-  { id: 'quantity', label: 'Quantity' },
-  { id: 'totalPrice', label: 'Total Price', align: 'right' },
+  { id: 'product', label: '상품명' },
+  { id: 'option', label: '옵션정보' },
+  { id: 'price', label: '가격(책정가)' },
   { id: '' },
 ];
 
@@ -38,11 +37,12 @@ export default function CheckoutCartProductList({
         <Table sx={{ minWidth: 720 }}>
           <TableHeadCustom headLabel={TABLE_HEAD} />
           <TableBody>
-            {products.map((row) => (
+            {products.map((row, idx) => (
               <CheckoutCartProduct
                 key={row.id}
                 row={row}
-                onDelete={() => onDelete(row.id)}
+                idx={idx}
+                onDelete={() => onDelete(idx)}
                 onDecrease={() => onDecreaseQuantity(row.id)}
                 onIncrease={() => onIncreaseQuantity(row.id)}
               />

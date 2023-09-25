@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { SkeletonProductDetails } from 'src/components/skeleton';
 import { apiShop, getProductByUser, getProductReviewsByUser } from 'src/utils/api-shop';
 import dynamic from 'next/dynamic'
+import toast from 'react-hot-toast';
 const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading ...</p>,
@@ -30,7 +31,7 @@ const Demo1 = (props) => {
       router
     },
   } = props;
-  const { themeStretch } = useSettingsContext();
+  const { themeStretch, themeCartData, onChangeCartData } = useSettingsContext();
 
   const [loading, setLoading] = useState(true);
 
@@ -74,7 +75,13 @@ const Demo1 = (props) => {
       component: product ? <ProductDetailsReview product={product} reviewContent={reviewContent} onChangePage={getItemInfo} /> : null,
     },
   ];
-
+  const onAddCart = async (select_groups) => {
+    onChangeCartData([...themeCartData,...[{
+      ...product,
+      select_groups: select_groups,
+    }]]);
+    toast.success('상품을 성공적으로 담았습니다.');
+  }
   return (
     <>
       <Wrapper>
@@ -94,7 +101,7 @@ const Demo1 = (props) => {
                       <ProductDetailsSummary
                         product={product}
                         cart={""}
-                        onAddCart={() => { }}
+                        onAddCart={onAddCart}
                         onGotoStep={() => { }}
                       />
                     </Grid>

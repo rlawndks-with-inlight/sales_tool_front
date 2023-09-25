@@ -117,10 +117,7 @@ const Demo1 = (props) => {
     getCart();
   }, [])
   const getCart = async () => {
-    let data = await getCartDataUtil(themeCartData);
-    setProducts(data);
-    let address_data = test_address_list;
-    setAddressList(address_data)
+    setProducts(themeCartData);
   }
   const onDelete = (idx) => {
     let product_list = [...products];
@@ -397,7 +394,7 @@ const Demo1 = (props) => {
             <CheckoutSummary
               enableDiscount
               total={_.sum(_.map(products, (item) => { return calculatorPrice(item).total }))}
-              discount={_.sum(_.map(products, (item) => { return calculatorPrice(item).discount }))}
+              option_price={_.sum(_.map(products, (item) => { return calculatorPrice(item).option_price }))}
               subtotal={_.sum(_.map(products, (item) => { return calculatorPrice(item).subtotal }))}
             />
             {activeStep == 0 &&
@@ -410,7 +407,7 @@ const Demo1 = (props) => {
                   disabled={_.sum(_.map(products, (item) => { return item.quantity * item.product_sale_price })) <= 0}
                   onClick={onClickNextStep}
                 >
-                  {'배송지 선택하기'}
+                  고객정보 입력하기
                 </Button>
               </>}
           </Grid>

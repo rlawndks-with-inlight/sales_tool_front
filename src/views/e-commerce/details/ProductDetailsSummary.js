@@ -17,16 +17,6 @@ import {
   Typography,
   IconButton,
   Select,
-  FormControl,
-  InputLabel,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  TextField,
-  DialogActions,
-  RadioGroup,
-  Paper,
   Chip,
 } from '@mui/material';
 // routes
@@ -34,26 +24,17 @@ import {
 import { fShortenNumber, fCurrency } from 'src/utils/formatNumber';
 // _mock
 // components
-import Label from 'src/components/label/Label';
 import Iconify from 'src/components/iconify/Iconify';
-import { IncrementerButton } from 'src/components/custom-input';
-import { ColorSinglePicker } from 'src/components/color-utils';
 import { commarNumber } from 'src/utils/function';
 import { themeObj } from 'src/components/elements/styled-components';
 import { useSettingsContext } from 'src/components/settings';
 import _ from 'lodash';
-import { toast } from 'react-hot-toast';
-import { CheckoutBillingAddress, CheckoutCartProductList, CheckoutSteps, CheckoutSummary } from 'src/views/e-commerce/checkout';
-import { test_address_list, test_pay_list } from 'src/data/test-data';
-import EmptyContent from 'src/components/empty-content/EmptyContent';
-import Payment from 'payment'
-import Cards from 'react-credit-cards'
+import { test_pay_list } from 'src/data/test-data';
 import { useAuthContext } from 'src/auth/useAuthContext';
-import { formatCreditCardNumber, formatExpirationDate } from 'src/utils/formatCard';
 import { useModal } from "src/components/dialog/ModalProvider";
-import { onPayItemByCard } from 'src/utils/api-shop';
-import { insertCartDataUtil, selectItemOptionUtil } from 'src/utils/shop-util';
+import { selectItemOptionUtil } from 'src/utils/shop-util';
 import { product_status_list } from 'src/data/status-data';
+import toast from 'react-hot-toast';
 // ----------------------------------------------------------------------
 
 ProductDetailsSummary.propTypes = {
@@ -63,7 +44,7 @@ ProductDetailsSummary.propTypes = {
   onGotoStep: PropTypes.func,
 };
 const STEPS = ['배송지 확인', '결제하기'];
-export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, ...other }) {
+export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, ...other }) {
   const { setModal } = useModal()
   const { themeCartData, onChangeCartData, themeDnsData } = useSettingsContext();
   const { user } = useAuthContext();
@@ -90,6 +71,7 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
     password: ""
   })
   const [cardFucus, setCardFocus] = useState()
+  const [selectGroups, setSelectGroups] = useState([]);
   const cart = []
 
   const {
@@ -98,31 +80,40 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
     sub_name,
     product_sale_price = 0,
     product_price = 0,
-    sizes = [],
     price,
     budget,
-    cover,
     status,
-    colors = [],
-    available,
-    priceSale,
-    rating,
-    product_average_scope,
-    totalReview,
-    inventoryType,
-    inventory,
-    product_name,
-    product_comment,
     groups = []
   } = product;
   useEffect(() => {
     let pay_list = test_pay_list;
     setPayList(pay_list)
   }, [])
-
   const onSelectOption = (group, option) => {
-    let select_product = selectItemOptionUtil(group, option, selectProduct);
-    setSelectProduct(select_product);
+    let is_exist_option_idx = _.findIndex(selectGroups, { group_id: parseInt(group?.id) });
+    let select_groups = selectGroups;
+    if (is_exist_option_idx >= 0) {
+      select_groups[is_exist_option_idx].group_id = group?.id;
+      select_groups[is_exist_option_idx].group_name = group?.name;
+      select_groups[is_exist_option_idx].option_id = option?.id;
+      select_groups[is_exist_option_idx].option_name = option?.name;
+      select_groups[is_exist_option_idx].option_price = option?.price;
+    } else {
+      select_groups.push({
+        group_id: group?.id,
+        group_name: group?.name,
+        option_id: option?.id,
+        option_name: option?.name,
+        option_price: option?.price,
+      })
+    }
+    select_groups.sort(function (a, b) {
+      return a.group_id - b.group_id || a.option_id - b.option_id;
+    });
+    let select_groups_concat = (select_groups ?? []).map(group => {
+      return `${group?.group_id}_${group?.option_id}`
+    }).join('_');
+    setSelectGroups(select_groups);
   }
 
   return (
@@ -193,7 +184,7 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
                 >
                   {group?.options && group?.options.map((option) => (
                     <MenuItem key={option?.option_name} value={option}>
-                      {option?.option_name}
+                      {option?.option_name} ({option?.option_price >= 0 ? `+` : ``}{commarNumber(option?.option_price)}원)
                     </MenuItem>
                   ))}
                 </Select>
@@ -209,11 +200,17 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
               color="warning"
               variant="contained"
               startIcon={<Iconify icon="ic:round-add-shopping-cart" />}
-              onClick={() => { }}
+              onClick={() => {
+                setModal({
+                  func: () => { onAddCart(selectGroups) },
+                  icon: 'ic:round-add-shopping-cart',
+                  title: '상품을 담으시겠습니까?'
+                })
+              }}
               sx={{ whiteSpace: 'nowrap' }}
 
             >
-              상품추가
+              상품담기
             </Button>
             <Button
               fullWidth
@@ -224,13 +221,6 @@ export default function ProductDetailsSummary({ product, onAddCart, onGotoStep, 
               }}>
               계약서작성
             </Button>
-          </Stack>
-          <Stack direction="row" alignItems="center" justifyContent="center">
-            {[].map((social) => (
-              <IconButton key={social.name}>
-                <Iconify icon={social.icon} />
-              </IconButton>
-            ))}
           </Stack>
         </Stack>
       </form>
