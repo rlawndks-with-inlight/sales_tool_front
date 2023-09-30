@@ -11,6 +11,8 @@ import { ColorPreview } from 'src/components/color-utils';
 import { IncrementerButton } from 'src/components/custom-input';
 import { commarNumber } from 'src/utils/function';
 import _ from 'lodash';
+import EstimateData from 'src/views/contract/EstimateData';
+import { BlobProvider } from '@react-pdf/renderer';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +23,7 @@ CheckoutCartProduct.propTypes = {
   onIncrease: PropTypes.func,
 };
 
-export default function CheckoutCartProduct({ row, onDelete, onDecrease, onIncrease }) {
+export default function CheckoutCartProduct({ row, customer, onDelete, onDecrease, onIncrease, onClickEstimatePreview }) {
   const { name, size, price, colors, cover, quantity, available, select_groups = [], budget, idx, product_img } = row;
 
   return (
@@ -64,6 +66,21 @@ export default function CheckoutCartProduct({ row, onDelete, onDecrease, onIncre
         </Stack>
       </TableCell>
       <TableCell>{fCurrency((budget?.budget_price || price) + _.sum(select_groups.map((group => { return group?.option_price ?? 0 }))))} 원</TableCell>
+      <TableCell align='center'>
+
+        <IconButton onClick={onClickEstimatePreview}>
+          <Iconify icon="fontisto:preview" />
+        </IconButton>
+      </TableCell>
+      <TableCell align='center'>
+        <BlobProvider document={<EstimateData product={row} customer={customer} />}>
+          {({ url }) => (
+            <IconButton href={url} target='_blank'>
+              <Iconify icon="ph:printer" />
+            </IconButton>
+          )}
+        </BlobProvider>
+      </TableCell>
       <TableCell align="right">
         <IconButton onClick={onDelete}>
           <Iconify icon="eva:trash-2-outline" />

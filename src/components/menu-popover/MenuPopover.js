@@ -4,7 +4,7 @@ import { Popover } from '@mui/material';
 //
 import getPosition from './getPosition';
 import { StyledArrow } from './styles';
-
+import $ from 'jquery';
 // ----------------------------------------------------------------------
 
 MenuPopover.propTypes = {
@@ -34,6 +34,7 @@ export default function MenuPopover({
   arrow = 'top-right',
   disabledArrow,
   sx,
+  class_name,
   ...other
 }) {
   const { style, anchorOrigin, transformOrigin } = getPosition(arrow);
@@ -44,6 +45,7 @@ export default function MenuPopover({
       anchorEl={open}
       anchorOrigin={anchorOrigin}
       transformOrigin={transformOrigin}
+      className={class_name}
       PaperProps={{
         sx: {
           p: 1,
@@ -62,7 +64,6 @@ export default function MenuPopover({
       {...other}
     >
       {!disabledArrow && <StyledArrow arrow={arrow} />}
-
       {children}
     </Popover>
   );

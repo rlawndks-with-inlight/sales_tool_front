@@ -14,7 +14,7 @@ import { useSettingsContext } from 'src/components/settings';
 
 const THUMB_SIZE = 64;
 
-const StyledThumbnailsContainer = styled('div', {
+export const StyledThumbnailsContainer = styled('div', {
   shouldForwardProp: (prop) => prop !== 'length',
 })(({ length, theme, themeMode }) => ({
   margin: theme.spacing(0, 'auto'),

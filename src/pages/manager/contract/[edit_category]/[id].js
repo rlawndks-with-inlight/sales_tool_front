@@ -1,9 +1,6 @@
-
-import { Avatar, Button, Card, CardHeader, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Stack, Tab, Tabs, TextField, TextareaAutosize, Typography } from "@mui/material";
+import { Avatar, Button, Card, CardHeader, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Row, themeObj } from "src/components/elements/styled-components";
-import { useSettingsContext } from "src/components/settings";
 import { Upload } from "src/components/upload";
 import { base64toFile, getAllIdsWithParents } from "src/utils/function";
 import styled from "styled-components";
@@ -55,7 +52,6 @@ const ContractEdit = () => {
       toast.success("성공적으로 저장 되었습니다.");
       router.push(`/manager/product`);
     }
-
   }
   return (
     <>

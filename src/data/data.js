@@ -5,9 +5,9 @@ import { useSettingsContext } from 'src/components/settings';
 export const backUrl = process.env.BACK_URL;
 export const logoSrc = () => {
   const { themeDnsData, themeMode } = useSettingsContext();
-  let default_img = 'https://backend.comagain.kr/storage/images/logos/IFFUcyTPtgF887r0RPOGXZyLLPvp016Je17MENFT.svg';
+  let default_img = '';
 
-  return themeDnsData[`${themeMode=='dark'?'dark_':''}logo_img`]
+  return themeDnsData[`${themeMode == 'dark' ? 'dark_' : ''}logo_img`]
 };
 export const KAKAO_OBJ = {
   BACKGROUND: '#F9E000',

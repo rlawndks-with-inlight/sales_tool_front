@@ -13,6 +13,8 @@ const TABLE_HEAD = [
   { id: 'product', label: '상품명' },
   { id: 'option', label: '옵션정보' },
   { id: 'price', label: '가격(책정가)' },
+  { id: 'estimate_preview', label: '견적서미리보기' },
+  { id: 'estimate_print', label: '견적서출력' },
   { id: '' },
 ];
 
@@ -30,10 +32,13 @@ export default function CheckoutCartProductList({
   onDelete,
   onIncreaseQuantity,
   onDecreaseQuantity,
+  onClickEstimatePreview,
+  customer,
+  
 }) {
   return (
     <TableContainer sx={{ overflow: 'unset' }}>
-      <Scrollbar>
+      <div style={{ width: '100%', overflow: 'auto' }}>
         <Table sx={{ minWidth: 720 }}>
           <TableHeadCustom headLabel={TABLE_HEAD} />
           <TableBody>
@@ -43,13 +48,15 @@ export default function CheckoutCartProductList({
                 row={row}
                 idx={idx}
                 onDelete={() => onDelete(idx)}
+                onClickEstimatePreview={() => onClickEstimatePreview(idx)}
                 onDecrease={() => onDecreaseQuantity(row.id)}
                 onIncrease={() => onIncreaseQuantity(row.id)}
+                customer={customer}
               />
             ))}
           </TableBody>
         </Table>
-      </Scrollbar>
+     </div>
     </TableContainer>
   );
 }

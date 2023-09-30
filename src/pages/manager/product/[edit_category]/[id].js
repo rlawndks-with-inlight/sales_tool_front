@@ -42,6 +42,10 @@ const ProductEdit = () => {
     },
     {
       value: 1,
+      label: '상품기본특성설정'
+    },
+    {
+      value: 2,
       label: '옵션설정'
     },
   ]
@@ -366,6 +370,20 @@ const ProductEdit = () => {
                 </Grid>
               </>}
             {currentTab == 1 &&
+              <>
+                <Grid item xs={12} md={12}>
+                  <Card sx={{ p: 2, height: '100%' }}>
+                    <Stack spacing={3}>
+                      <Stack spacing={1} style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                          상품옵션
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </Card>
+                </Grid>
+              </>}
+            {currentTab == 2 &&
               <>
                 <Grid item xs={12} md={12}>
                   <Card sx={{ p: 2, height: '100%' }}>

@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 // routes
 // utils
-import { fShortenNumber, fCurrency } from 'src/utils/formatNumber';
+import { fCurrency } from 'src/utils/formatNumber';
 // _mock
 // components
 import Iconify from 'src/components/iconify/Iconify';
@@ -72,6 +72,7 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
   })
   const [cardFucus, setCardFocus] = useState()
   const [selectGroups, setSelectGroups] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const cart = []
 
   const {
@@ -89,6 +90,26 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
     let pay_list = test_pay_list;
     setPayList(pay_list)
   }, [])
+  const carouselSettings1 = {
+    dots: false,
+    arrows: false,
+    slidesToShow: 1,
+    draggable: false,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+    beforeChange: (current, next) => setCurrentIndex(next),
+  };
+
+  const carouselSettings2 = {
+    dots: false,
+    arrows: false,
+    centerMode: true,
+    swipeToSlide: true,
+    focusOnSelect: true,
+    variableWidth: true,
+    centerPadding: '0px',
+    slidesToShow: product.images.length > 3 ? 3 : product.images.length,
+  };
   const onSelectOption = (group, option) => {
     let is_exist_option_idx = _.findIndex(selectGroups, { group_id: parseInt(group?.id) });
     let select_groups = selectGroups;

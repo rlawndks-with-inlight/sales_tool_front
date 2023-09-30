@@ -5,7 +5,10 @@ import { Typography, IconButton, MenuItem, Card, Avatar } from '@mui/material';
 //
 import Iconify from '../../iconify';
 import MenuPopover from '../../menu-popover';
-import { getUserLevelByNumber } from 'src/utils/function';
+import { getUserLevelByNumber, returnMoment } from 'src/utils/function';
+import { useEffect } from 'react';
+import useResizeObserver from 'src/hooks/useResizeObserver';
+import { useCallback } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +29,12 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
   const handleClosePopover = () => {
     setOpenPopover(null);
   };
+  const onResize = useCallback((target) => {
+    console.log(returnMoment());
+    // Handle the resize event
+  }, []);
 
+  const ref = useResizeObserver(onResize);
   return (
     <>
       <Card
@@ -40,6 +48,8 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
           flexDirection: 'column',
           ...sx,
         }}
+        ref={ref}
+        className={`${node.user_name}-popover`}
       >
         <IconButton
           color={openPopover ? 'inherit' : 'default'}
@@ -72,6 +82,7 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
         anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
         transformOrigin={{ vertical: 'center', horizontal: 'left' }}
         arrow="left-center"
+        class_name={`${node.user_name}-popover`}
         sx={{ width: 160 }}
       >
         {/* {onDelete && (

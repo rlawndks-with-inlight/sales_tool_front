@@ -69,11 +69,7 @@ const Demo1 = (props) => {
           bounds={'.app'}
         /> : null,
     },
-    {
-      value: 'reviews',
-      label: `상품후기 (${reviewContent?.total ?? 0})`,
-      component: product ? <ProductDetailsReview product={product} reviewContent={reviewContent} onChangePage={getItemInfo} /> : null,
-    },
+    
   ];
   const onAddCart = async (select_groups) => {
     onChangeCartData([...themeCartData,...[{
