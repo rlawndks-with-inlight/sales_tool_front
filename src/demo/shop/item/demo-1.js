@@ -69,12 +69,13 @@ const Demo1 = (props) => {
           bounds={'.app'}
         /> : null,
     },
-    
+
   ];
-  const onAddCart = async (select_groups) => {
-    onChangeCartData([...themeCartData,...[{
+  const onAddCart = async (select_groups, count) => {
+    onChangeCartData([...themeCartData, ...[{
       ...product,
       select_groups: select_groups,
+      count: count,
     }]]);
     toast.success('상품을 성공적으로 담았습니다.');
   }

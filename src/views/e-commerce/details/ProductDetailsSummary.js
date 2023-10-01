@@ -35,6 +35,7 @@ import { useModal } from "src/components/dialog/ModalProvider";
 import { selectItemOptionUtil } from 'src/utils/shop-util';
 import { product_status_list } from 'src/data/status-data';
 import toast from 'react-hot-toast';
+import { IncrementerButton } from 'src/components/custom-input';
 // ----------------------------------------------------------------------
 
 ProductDetailsSummary.propTypes = {
@@ -70,9 +71,8 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
     temp: [],
     password: ""
   })
-  const [cardFucus, setCardFocus] = useState()
+  const [count, setCount] = useState(1);
   const [selectGroups, setSelectGroups] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const cart = []
 
   const {
@@ -84,32 +84,14 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
     price,
     budget,
     status,
-    groups = []
+    groups = [],
+    characters = [],
   } = product;
   useEffect(() => {
     let pay_list = test_pay_list;
     setPayList(pay_list)
   }, [])
-  const carouselSettings1 = {
-    dots: false,
-    arrows: false,
-    slidesToShow: 1,
-    draggable: false,
-    slidesToScroll: 1,
-    adaptiveHeight: true,
-    beforeChange: (current, next) => setCurrentIndex(next),
-  };
 
-  const carouselSettings2 = {
-    dots: false,
-    arrows: false,
-    centerMode: true,
-    swipeToSlide: true,
-    focusOnSelect: true,
-    variableWidth: true,
-    centerPadding: '0px',
-    slidesToShow: product.images.length > 3 ? 3 : product.images.length,
-  };
   const onSelectOption = (group, option) => {
     let is_exist_option_idx = _.findIndex(selectGroups, { group_id: parseInt(group?.id) });
     let select_groups = selectGroups;
@@ -131,12 +113,9 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
     select_groups.sort(function (a, b) {
       return a.group_id - b.group_id || a.option_id - b.option_id;
     });
-    let select_groups_concat = (select_groups ?? []).map(group => {
-      return `${group?.group_id}_${group?.option_id}`
-    }).join('_');
     setSelectGroups(select_groups);
   }
-
+  console.log(characters)
   return (
     <>
       <form>
@@ -162,13 +141,11 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
 
             <Typography variant="h5">{name}</Typography>
             <Typography variant="h7" color={themeObj.grey[500]}>{sub_name}</Typography>
-
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Rating value={5} precision={0.1} readOnly />
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                ({5})
-              </Typography>
-            </Stack>
+            {characters.map((character, idx) => (
+              <>
+                <Typography variant="h8" color={themeObj.grey[600]} sx={{fontSize:'0.8rem'}}>{character?.character_key}: {character?.character_value}</Typography>
+              </>
+            ))}
             <Typography variant="h4">
               {product_price > product_sale_price && (
                 <Box
@@ -212,6 +189,26 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
               </Stack>
             </>
           ))}
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="subtitle2" sx={{ height: 36, lineHeight: '36px' }}>
+              수량
+            </Typography>
+
+            <Stack spacing={1}>
+              <IncrementerButton
+                name="quantity"
+                quantity={count}
+                disabledDecrease={count <= 1}
+                disabledIncrease={count >= 100}
+                onIncrease={() => {
+                  setCount(count + 1);
+                }}
+                onDecrease={() => {
+                  setCount(count - 1);
+                }}
+              />
+            </Stack>
+          </Stack>
           <Divider sx={{ borderStyle: 'dashed' }} />
           <Stack direction="row" spacing={2}>
             <Button
@@ -223,7 +220,7 @@ export default function ProductDetailsSummary({ product, onGotoStep, onAddCart, 
               startIcon={<Iconify icon="ic:round-add-shopping-cart" />}
               onClick={() => {
                 setModal({
-                  func: () => { onAddCart(selectGroups) },
+                  func: () => { onAddCart(selectGroups, count) },
                   icon: 'ic:round-add-shopping-cart',
                   title: '상품을 담으시겠습니까?'
                 })

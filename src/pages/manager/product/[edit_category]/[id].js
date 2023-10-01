@@ -376,8 +376,76 @@ const ProductEdit = () => {
                     <Stack spacing={3}>
                       <Stack spacing={1} style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
                         <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                          상품옵션
+                          상품특성
                         </Typography>
+                        {item.characters.map((character, index) => (
+                          <>
+                            {character?.is_delete != 1 &&
+                              <>
+                                <Row style={{ columnGap: '0.5rem' }}>
+                                  <TextField
+                                    sx={{ flexGrow: 1 }}
+                                    label='특성옵션명'
+                                    placeholder="예시) 원산지"
+                                    value={character.character_key}
+                                    onChange={(e) => {
+                                      let character_list = item?.characters;
+                                      character_list[index].character_key = e.target.value;
+                                      setItem(
+                                        {
+                                          ...item,
+                                          ['characters']: character_list
+                                        }
+                                      )
+                                    }} />
+                                  <FormControl variant="outlined" sx={{ flexGrow: 1 }}>
+                                    <InputLabel>특성값</InputLabel>
+                                    <OutlinedInput
+                                      label='특성값'
+                                      placeholder="예시) 국내산"
+                                      value={character.character_value}
+                                      onChange={(e) => {
+                                        let character_list = item?.characters;
+                                        character_list[index].character_value = e.target.value;
+                                        setItem(
+                                          {
+                                            ...item,
+                                            ['characters']: character_list
+                                          }
+                                        )
+                                      }} />
+                                  </FormControl>
+                                  <IconButton onClick={() => {
+                                    let character_list = item?.characters;
+                                    if (character_list[index]?.id) {
+                                      character_list[index].is_delete = 1;
+                                    } else {
+                                      character_list.splice(idx, 1);
+                                    }
+                                    setItem(
+                                      {
+                                        ...item,
+                                        ['characters']: character_list
+                                      }
+                                    )
+                                  }}>
+                                    <Icon icon='material-symbols:delete-outline' />
+                                  </IconButton>
+                                </Row>
+                              </>}
+                          </>
+                        ))}
+                        <Button variant="outlined" sx={{ height: '48px' }} onClick={() => {
+                          let character_list = [...item.characters];
+                          character_list.push({
+                            character_key: '',
+                            character_value: '',
+                          })
+                          setItem({
+                            ...item,
+                            ['characters']: character_list
+                          })
+                        }}>상품특성 추가</Button>
                       </Stack>
                     </Stack>
                   </Card>

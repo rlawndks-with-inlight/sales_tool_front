@@ -12,9 +12,9 @@ import CheckoutCartProduct from './CheckoutCartProduct';
 const TABLE_HEAD = [
   { id: 'product', label: '상품명' },
   { id: 'option', label: '옵션정보' },
+  { id: 'count', label: '수량' },
   { id: 'price', label: '가격(책정가)' },
-  { id: 'estimate_preview', label: '견적서미리보기' },
-  { id: 'estimate_print', label: '견적서출력' },
+  { id: 'estimate_print', label: '견적서개별출력' },
   { id: '' },
 ];
 
@@ -34,7 +34,7 @@ export default function CheckoutCartProductList({
   onDecreaseQuantity,
   onClickEstimatePreview,
   customer,
-  
+  onSavePdf
 }) {
   return (
     <TableContainer sx={{ overflow: 'unset' }}>
@@ -49,9 +49,10 @@ export default function CheckoutCartProductList({
                 idx={idx}
                 onDelete={() => onDelete(idx)}
                 onClickEstimatePreview={() => onClickEstimatePreview(idx)}
-                onDecrease={() => onDecreaseQuantity(row.id)}
-                onIncrease={() => onIncreaseQuantity(row.id)}
+                onDecrease={() => onDecreaseQuantity(idx)}
+                onIncrease={() => onIncreaseQuantity(idx)}
                 customer={customer}
+                onSavePdf={onSavePdf}
               />
             ))}
           </TableBody>

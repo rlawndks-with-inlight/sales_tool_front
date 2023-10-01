@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
-import { Box, Stack, Divider, TableRow, TableCell, Typography, IconButton } from '@mui/material';
+import { Box, Stack, Divider, TableRow, TableCell, Typography, IconButton, Tooltip } from '@mui/material';
 // utils
 import { fCurrency } from 'src/utils/formatNumber';
 // components
@@ -12,8 +12,10 @@ import { IncrementerButton } from 'src/components/custom-input';
 import { commarNumber } from 'src/utils/function';
 import _ from 'lodash';
 import EstimateData from 'src/views/contract/EstimateData';
-import { BlobProvider } from '@react-pdf/renderer';
-
+import { BlobProvider, pdf, renderToString } from '@react-pdf/renderer';
+import { useSettingsContext } from 'src/components/settings';
+import jsPDF from 'jspdf';
+import "jspdf-autotable";
 // ----------------------------------------------------------------------
 
 CheckoutCartProduct.propTypes = {
@@ -23,8 +25,9 @@ CheckoutCartProduct.propTypes = {
   onIncrease: PropTypes.func,
 };
 
-export default function CheckoutCartProduct({ row, customer, onDelete, onDecrease, onIncrease, onClickEstimatePreview }) {
-  const { name, size, price, colors, cover, quantity, available, select_groups = [], budget, idx, product_img } = row;
+export default function CheckoutCartProduct({ row, customer, onDelete, onDecrease, onIncrease, onClickEstimatePreview, onSavePdf, idx }) {
+  const { themeDnsData } = useSettingsContext();
+  const { name, size, price, colors, cover, quantity, available, select_groups = [], budget, product_img, count } = row;
 
   return (
     <TableRow>
@@ -65,21 +68,26 @@ export default function CheckoutCartProduct({ row, customer, onDelete, onDecreas
             </>}
         </Stack>
       </TableCell>
-      <TableCell>{fCurrency((budget?.budget_price || price) + _.sum(select_groups.map((group => { return group?.option_price ?? 0 }))))} 원</TableCell>
-      <TableCell align='center'>
-
-        <IconButton onClick={onClickEstimatePreview}>
-          <Iconify icon="fontisto:preview" />
-        </IconButton>
+      <TableCell>
+        <Box sx={{ width: 96, textAlign: 'right' }}>
+          <IncrementerButton
+            quantity={count ?? 1}
+            onDecrease={onDecrease}
+            onIncrease={onIncrease}
+            disabledDecrease={count <= 1}
+            disabledIncrease={count >= available}
+          />
+        </Box>
       </TableCell>
+      <TableCell>{fCurrency(((budget?.budget_price || price) + _.sum(select_groups.map((group => { return group?.option_price ?? 0 })))) * count)} 원</TableCell>
       <TableCell align='center'>
-        <BlobProvider document={<EstimateData product={row} customer={customer} />}>
-          {({ url }) => (
-            <IconButton href={url} target='_blank'>
-              <Iconify icon="ph:printer" />
-            </IconButton>
-          )}
-        </BlobProvider>
+        <Tooltip title={'해당 행의 내용만 들어있는 견적서가 출력됩니다.'}>
+          <IconButton onClick={() => {
+            onSavePdf(idx);
+          }}>
+            <Iconify icon="bi:file-pdf" />
+          </IconButton>
+        </Tooltip>
       </TableCell>
       <TableCell align="right">
         <IconButton onClick={onDelete}>

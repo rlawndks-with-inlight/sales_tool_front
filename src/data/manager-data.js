@@ -75,5 +75,6 @@ export const defaultManagerObj = {
     product_sub_imgs: [],
     status: 0,
     groups: [],
+    characters: [],
   },
 }

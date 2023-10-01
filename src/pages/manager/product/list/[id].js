@@ -161,25 +161,6 @@ const ProductList = () => {
 
             <Stack spacing={3}>
                 <Card>
-                    <Row style={{ padding: '12px', columnGap: '0.5rem' }}>
-                        <FormControl
-                            size="small"
-                        >
-                            <InputLabel>카테고리</InputLabel>
-                            <Select
-                                style={{ flexGrow: 1, width: '240px' }}
-                                label='result 타입'
-                                value={searchObj?.response_result_type}
-                                onChange={(e) => {
-                                    onChangePage({ ...searchObj, response_result_type: e.target.value })
-                                }}>
-                                <MenuItem value={null}>{'전체'}</MenuItem>
-                                <MenuItem value={1}>{'성공'} ({data?.success && (data?.success[0]?.success ?? 0)})</MenuItem>
-                                <MenuItem value={2}>{'실패'} ({data?.fail && (data?.fail[0]?.fail ?? 0)})</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Row>
-                    <Divider />
                     <ManagerTable
                         data={data}
                         columns={columns}

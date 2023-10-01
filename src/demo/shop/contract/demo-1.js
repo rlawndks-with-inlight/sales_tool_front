@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, CardHeader, Dialog, DialogContent, FormControlLabel, Grid, IconButton, Paper, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Row, Title } from 'src/components/elements/styled-components';
 import { test_pay_list, test_address_list, test_item, test_items } from 'src/data/test-data';
 import { CheckoutCartProductList, CheckoutSteps, CheckoutSummary } from 'src/views/e-commerce/checkout';
@@ -18,6 +18,7 @@ import makePdf from 'src/components/make-pdf';
 import EstimateData from 'src/views/contract/EstimateData';
 import $ from 'jquery';
 import { BlobProvider, PDFDownloadLink, pdf } from '@react-pdf/renderer';
+import jsPDF from 'jspdf';
 const Wrappers = styled.div`
 max-width:1500px;
 display:flex;
@@ -28,7 +29,7 @@ min-height:90vh;
 margin-bottom:10vh;
 `
 
-const STEPS = ['고객정보 작성', '견적서 출력', '계약서 작성'];
+const STEPS = ['고객정보 작성', '견적서 정보작성', '견적서 출력', '계약서 작성'];
 
 
 const Demo1 = (props) => {
@@ -42,7 +43,8 @@ const Demo1 = (props) => {
   } = props;
   const { setModal } = useModal()
   const { user } = useAuthContext();
-
+  const estimateRef = useRef([]);
+  const estimateBatchRef = useState(null);
   const { themeCartData, onChangeCartData, themeDnsData } = useSettingsContext();
   const [products, setProducts] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
@@ -50,6 +52,12 @@ const Demo1 = (props) => {
     name: '',
     phone_num: '',
   });
+  const [estimate, setEstimate] = useState({
+    title: '',
+    etc: '',
+    install_price: 0,
+    install_count: 0,
+  })
   const [openDialog, setOpenDialog] = useState('');
   const [previewIndex, setPreviewIndex] = useState(undefined);
   useEffect(() => {
@@ -73,24 +81,24 @@ const Demo1 = (props) => {
   }
   const onDecreaseQuantity = (idx) => {
     let product_list = [...products];
-    product_list[idx].count--;
-    setProducts(product_list)
+    product_list[idx].count = (product_list[idx]?.count ?? 1) - 1;
+    setProducts(product_list);
+    onChangeCartData(product_list);
   }
   const onIncreaseQuantity = (idx) => {
     let product_list = [...products];
-    product_list[idx].count++;
-    setProducts(product_list)
+    product_list[idx].count = (product_list[idx]?.count ?? 1) + 1;
+    setProducts(product_list);
+    onChangeCartData(product_list);
   }
   const onClickNextStep = () => {
-    if (activeStep == 0) {
 
-    }
-    if (activeStep == 1) {
+    if (activeStep == 2) {
       setModal({
         func: () => { onClickReflectEstimate(); },
         icon: 'carbon:next-outline',
         title: '다음단계로 넘어가시겠습니까?',
-        sub_title: '해당 견적이 전산에 반영됩니다.',
+        sub_title: '해당 견적이 관리자 페이지에 반영됩니다.',
       })
       return;
     }
@@ -115,7 +123,32 @@ const Demo1 = (props) => {
 
     }
   }
-  
+  const onSavePdf = async (idx) => {
+    const doc = new jsPDF({
+      orientation: 'p',
+      unit: 'pt',
+      format: 'letter',
+      putOnlyUsedFonts: true,
+      compress: true
+    });
+
+    doc.addFont('/fonts/NotoSansKR-Regular.ttf', 'Noto Sans CJK KR', 'normal');
+    let html = undefined;
+    console.log(idx)
+    if (idx >= 0) {
+      html = estimateRef.current[idx];
+    } else {
+      html = estimateBatchRef.current;
+    }
+
+    await doc.html(html, {
+      width: 580,
+      windowWidth: 580,
+      margin: 15,
+    });
+    doc.output('dataurlnewwindow');
+
+  }
   return (
     <>
       <Dialog
@@ -142,9 +175,29 @@ const Demo1 = (props) => {
             <Iconify icon={'material-symbols:close'} />
           </IconButton>
         </Row>
-        <EstimateData products={products} customer={customer} previewIndex={previewIndex} />
       </Dialog>
-      <EstimateData products={products} customer={customer} previewIndex={previewIndex} style={{ position: 'absolute', top: '-9999px', display: 'flex' }} class_name='pdf' />
+      {products.map((product, index) => {
+        return <div style={{ position: 'absolute', top: '-9999px', display: 'none' }}>
+          <div
+            style={{
+              width: '598px'
+            }}
+            ref={(element) => {
+              estimateRef.current[index] = element;
+            }}>
+            <EstimateData product={product} customer={customer} dns_data={themeDnsData} estimate={estimate} />
+          </div>
+        </div>
+      })}
+      <div style={{ position: 'absolute', top: '-9999px', display: 'none' }}>
+        <div
+          style={{
+            width: '598px'
+          }}
+          ref={estimateBatchRef}>
+          <EstimateData products={products} customer={customer} dns_data={themeDnsData} estimate={estimate} />
+        </div>
+      </div>
       <Wrappers>
         <Title>새 계약 생성</Title>
         <CheckoutSteps activeStep={activeStep} steps={STEPS} />
@@ -156,7 +209,6 @@ const Demo1 = (props) => {
                   <Button startIcon={<Iconify icon="grommet-icons:form-previous" />} onClick={onClickPrevStep} variant="soft" size="small">
                     이전 단계 돌아가기
                   </Button>
-
                 </>
                 :
                 <>
@@ -217,6 +269,67 @@ const Demo1 = (props) => {
             {activeStep == 1 &&
               <>
                 <Card>
+                  <CardHeader title="견적서 기본정보입력" />
+                  <CardContent>
+                    <Stack spacing={3} sx={{ width: 1 }}>
+                      <TextField
+                        label='견적서제목'
+                        value={estimate.title}
+                        onChange={(e) => {
+                          setEstimate(
+                            {
+                              ...estimate,
+                              ['title']: e.target.value
+                            }
+                          )
+                        }} />
+                      <TextField
+                        label='배송 및 설치 수량'
+                        type='number'
+                        value={estimate.install_count}
+                        onChange={(e) => {
+                          setEstimate(
+                            {
+                              ...estimate,
+                              ['install_count']: e.target.value
+                            }
+                          )
+                        }} />
+                      <TextField
+                        label='배송 및 설치 비용'
+                        type='number'
+                        value={estimate.install_price}
+                        InputProps={{
+                          endAdornment: (
+                            <>원</>
+                          )
+                        }}
+                        onChange={(e) => {
+                          setEstimate(
+                            {
+                              ...estimate,
+                              ['install_price']: e.target.value
+                            }
+                          )
+                        }} />
+                      <TextField
+                        label='비고'
+                        value={estimate.etc}
+                        onChange={(e) => {
+                          setEstimate(
+                            {
+                              ...estimate,
+                              ['etc']: e.target.value
+                            }
+                          )
+                        }} />
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </>}
+            {activeStep == 2 &&
+              <>
+                <Card>
                   {products.length > 0 ?
                     <>
                       <CheckoutCartProductList
@@ -226,6 +339,7 @@ const Demo1 = (props) => {
                         onIncreaseQuantity={onIncreaseQuantity}
                         onClickEstimatePreview={onClickEstimatePreview}
                         customer={customer}
+                        onSavePdf={onSavePdf}
                       />
                     </>
                     :
@@ -238,7 +352,7 @@ const Demo1 = (props) => {
                     </>}
                 </Card>
               </>}
-            {activeStep == 2 &&
+            {activeStep == 3 &&
               <>
                 <Card sx={{ marginBottom: '1.5rem' }}>
                   <CardHeader title="결제 수단 선택" />
@@ -257,11 +371,12 @@ const Demo1 = (props) => {
             />
             <Button
               fullWidth
-              disabled={!(activeStep == 1)}
+              disabled={!(activeStep == 2)}
               size="large"
               variant="contained"
               startIcon={<Iconify icon="bi:file-pdf" />}
               onClick={async () => {
+                onSavePdf(-1);
               }}
               sx={{ whiteSpace: 'nowrap', marginBottom: '1rem' }}
 
