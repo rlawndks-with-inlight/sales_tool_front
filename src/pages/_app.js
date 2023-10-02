@@ -32,7 +32,7 @@ import { useState } from 'react';
 const App = (props) => {
   const { Component, pageProps, head_data, host, host_data } = props;
   const getLayout = Component.getLayout ?? ((page) => page);
-  const [headData, setHeadData] = useState(undefined);
+  const [headData, setHeadData] = useState({});
   useEffect(() => {
     if (Object.keys(head_data).length > 0) {
       setHeadData(head_data)
@@ -62,28 +62,24 @@ const App = (props) => {
         <meta name="apple-mobile-web-app-title" content={head_data?.name || headData?.name} />
         <meta name="theme-color" content={head_data?.theme_css?.main_color || headData?.theme_css?.main_color} />
       </Head>
-      {headData &&
-        <>
-          <AuthProvider>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <ThemeColorPresets>
-                <ThemeContrast>
-                  <SettingsProvider>
-                    <MotionLazyContainer>
-                      <ThemeProvider>
-                        <ModalProvider>
-                          {getLayout(<Component {...pageProps} />)}
-                        </ModalProvider>
-                        <Toaster position={'right-top'} toastOptions={{ className: 'react-hot-toast' }} />
-                      </ThemeProvider>
-                    </MotionLazyContainer>
-                  </SettingsProvider>
-                </ThemeContrast>
-              </ThemeColorPresets>
-            </LocalizationProvider>
-          </AuthProvider>
-        </>}
-
+      <AuthProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <ThemeColorPresets>
+            <ThemeContrast>
+              <SettingsProvider>
+                <MotionLazyContainer>
+                  <ThemeProvider>
+                    <ModalProvider>
+                      {getLayout(<Component {...pageProps} />)}
+                    </ModalProvider>
+                    <Toaster position={'right-top'} toastOptions={{ className: 'react-hot-toast' }} />
+                  </ThemeProvider>
+                </MotionLazyContainer>
+              </SettingsProvider>
+            </ThemeContrast>
+          </ThemeColorPresets>
+        </LocalizationProvider>
+      </AuthProvider>
     </>
   );
 }
