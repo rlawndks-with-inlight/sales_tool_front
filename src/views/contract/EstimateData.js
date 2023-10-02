@@ -63,9 +63,8 @@ const EstimateData = (props) => {
         }
     });
     const renderPdfPage = (product, products) => {
-        const { budget, select_groups, price, count, name, characters, } = product;
+        const { budget, select_groups=[], price, count, name, characters=[], } = product;
         let dnsData = themeDnsData || dns_data;
-
         return <>
             <Col style={{
                 ...style,
