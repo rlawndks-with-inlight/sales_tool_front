@@ -20,7 +20,6 @@ import $ from 'jquery';
 import { BlobProvider, PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import jsPDF from 'jspdf';
 import { Watermark } from '@hirohe/react-watermark';
-import { logoSrc } from 'src/data/data';
 import { returnMoment } from 'src/utils/function';
 const Wrappers = styled.div`
 max-width:1500px;
@@ -135,8 +134,10 @@ const Demo1 = (props) => {
       await doc.saveGraphicsState();
       await doc.setGState(new doc.GState({ opacity: 0.2 }));
       await doc.setTextColor('#cccccc');
+      await doc.addFont('/fonts/NotoSansKR-Regular.ttf', 'Noto Sans CJK KR', 'normal');
+      await doc.setFont('Noto Sans CJK KR')
       await doc.setFontSize(150);
-      await doc.text(`${themeDnsData?.name}`, 160, doc.internal.pageSize.height - 200, { angle: 45, });
+      await doc.text(`가나다`, 160, doc.internal.pageSize.height - 200, { angle: 45, });
     }
 
     return doc;
@@ -151,6 +152,7 @@ const Demo1 = (props) => {
     });
 
     doc.addFont('/fonts/NotoSansKR-Regular.ttf', 'Noto Sans CJK KR', 'normal');
+    doc.setFont('Noto Sans CJK KR')
     let html = undefined;
 
     if (idx >= 0) {
