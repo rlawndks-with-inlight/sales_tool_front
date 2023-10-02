@@ -30,6 +30,7 @@
     "@fullcalendar/react": "6.0.2",
     "@fullcalendar/timegrid": "6.0.2",
     "@fullcalendar/timeline": "^6.0.3",
+    "@hirohe/react-watermark": "^0.5.0",
     "@hookform/resolvers": "2.9.10",
     "@iconify/react": "4.0.1",
     "@mui/lab": "5.0.0-alpha.115",

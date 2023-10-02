@@ -19,6 +19,9 @@ import EstimateData from 'src/views/contract/EstimateData';
 import $ from 'jquery';
 import { BlobProvider, PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import jsPDF from 'jspdf';
+import { Watermark } from '@hirohe/react-watermark';
+import { logoSrc } from 'src/data/data';
+import { returnMoment } from 'src/utils/function';
 const Wrappers = styled.div`
 max-width:1500px;
 display:flex;
@@ -123,8 +126,23 @@ const Demo1 = (props) => {
 
     }
   }
+  async function addWaterMark(doc) {
+    var totalPages = doc.internal.getNumberOfPages();
+    console.log(totalPages)
+    for (var i = 1; i <= totalPages; i++) {
+      await doc.setPage(i);
+      //doc.addImage(imgData, 'PNG', 40, 40, 75, 75);
+      await doc.saveGraphicsState();
+      await doc.setGState(new doc.GState({ opacity: 0.2 }));
+      await doc.setTextColor('#cccccc');
+      await doc.setFontSize(150);
+      await doc.text(`${themeDnsData?.name}`, 160, doc.internal.pageSize.height - 200, { angle: 45, });
+    }
+
+    return doc;
+  }
   const onSavePdf = async (idx) => {
-    const doc = new jsPDF({
+    let doc = new jsPDF({
       orientation: 'p',
       unit: 'pt',
       format: 'letter',
@@ -134,7 +152,7 @@ const Demo1 = (props) => {
 
     doc.addFont('/fonts/NotoSansKR-Regular.ttf', 'Noto Sans CJK KR', 'normal');
     let html = undefined;
-    console.log(idx)
+
     if (idx >= 0) {
       html = estimateRef.current[idx];
     } else {
@@ -146,8 +164,13 @@ const Demo1 = (props) => {
       windowWidth: 580,
       margin: 15,
     });
-    doc.output('dataurlnewwindow');
-
+    doc = await addWaterMark(doc);
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // 모바일인 경우
+      doc.save(`${user?.name}견적서${returnMoment().replaceAll(' ', '').replaceAll('-', '').replaceAll(':', '')}`)
+    } else {
+      doc.output('dataurlnewwindow');
+    }
   }
   return (
     <>
@@ -180,7 +203,7 @@ const Demo1 = (props) => {
         return <div style={{ position: 'absolute', top: '-9999px', display: 'none' }}>
           <div
             style={{
-              width: '598px'
+              width: '598px',
             }}
             ref={(element) => {
               estimateRef.current[index] = element;
@@ -192,7 +215,7 @@ const Demo1 = (props) => {
       <div style={{ position: 'absolute', top: '-9999px', display: 'none' }}>
         <div
           style={{
-            width: '598px'
+            width: '598px',
           }}
           ref={estimateBatchRef}>
           <EstimateData products={products} customer={customer} dns_data={themeDnsData} estimate={estimate} />

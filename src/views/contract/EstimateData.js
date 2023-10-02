@@ -9,6 +9,7 @@ import { commarNumber, returnMoment } from 'src/utils/function';
 import styled from 'styled-components';
 import jsPDF from "jspdf";
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Watermark } from '@hirohe/react-watermark';
 
 Font.register({ family: 'Noto Sans CJK KR', src: '/fonts/NotoSansKR-Regular.ttf' });
 
@@ -27,6 +28,17 @@ border-bottom: 1px solid #ccc;
 padding: 0 0.5rem 1rem 0.5rem;
 align-items:center;
 text-align:center;
+`
+const WaterMarkContainer = styled.div`
+
+`
+const WaterMark = styled.img`
+height: 128px;
+width: auto;
+position:absolute;
+top: 50%;
+left: 50%;
+transform: rotate(45deg);
 `
 const EstimateData = (props) => {
     const { themeDnsData } = useSettingsContext();
@@ -63,13 +75,16 @@ const EstimateData = (props) => {
         }
     });
     const renderPdfPage = (product, products) => {
-        const { budget, select_groups=[], price, count, name, characters=[], } = product;
+        const { budget, select_groups = [], price, count, name, characters = [], } = product;
         let dnsData = themeDnsData || dns_data;
+
         return <>
             <Col style={{
                 ...style,
-                padding: 16,
-                width: '100%'
+                width: '100%',
+                position: 'relative',
+                minHeight: "761px",
+                padding: '0 1rem 0 0',
             }}
             >
                 <Row style={{ alignItems: 'center' }}>
