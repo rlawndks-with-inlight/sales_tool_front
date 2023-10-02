@@ -76,6 +76,11 @@ const Demo1 = (props) => {
       ...product,
       select_groups: select_groups,
       count: count,
+      estimate: {
+        install_price: 0,
+        install_count: 0,
+        note: '',
+      }
     }]]);
     toast.success('상품을 성공적으로 담았습니다.');
   }

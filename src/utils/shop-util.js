@@ -10,14 +10,16 @@ export const calculatorPrice = (item) => {// 상품별로 가격
     if (!item) {
         return 0;
     }
-    let { budget, price, select_groups = [], count = 1 } = item;
+    let { budget, price, select_groups = [], count = 1, estimate } = item;
     let subtotal = budget?.budget_price || price || 0;
     let option_price = _.sum(select_groups.map(group => { return group?.option_price }));
+    let install_price = (estimate?.install_price ?? 0) * (estimate?.install_count ?? 0)
     let total = subtotal + option_price;
     return {
         subtotal: subtotal * count,//원책정가
         option_price: option_price * count,//옵션가
-        total: total * count//옵션적용된 가격
+        total: total * count + install_price,//옵션적용된 가격
+        install_price: install_price//배송및 설치가
     }
 }
 export const makePayData = (products_, payData_) => {

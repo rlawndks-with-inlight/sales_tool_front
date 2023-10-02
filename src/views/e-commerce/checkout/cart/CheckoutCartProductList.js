@@ -14,7 +14,8 @@ const TABLE_HEAD = [
   { id: 'option', label: '옵션정보' },
   { id: 'count', label: '수량' },
   { id: 'price', label: '가격(책정가)' },
-  { id: 'estimate_print', label: '견적서개별출력' },
+  { id: 'install', label: '배송및설치정보' },
+  { id: 'note', label: '비고' },
   { id: '' },
 ];
 
@@ -29,6 +30,7 @@ CheckoutCartProductList.propTypes = {
 
 export default function CheckoutCartProductList({
   products,
+  setProducts,
   onDelete,
   onIncreaseQuantity,
   onDecreaseQuantity,
@@ -47,6 +49,8 @@ export default function CheckoutCartProductList({
                 key={row.id}
                 row={row}
                 idx={idx}
+                products={products}
+                setProducts={setProducts}
                 onDelete={() => onDelete(idx)}
                 onClickEstimatePreview={() => onClickEstimatePreview(idx)}
                 onDecrease={() => onDecreaseQuantity(idx)}

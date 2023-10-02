@@ -9,7 +9,7 @@ import { commarNumber, returnMoment } from 'src/utils/function';
 import styled from 'styled-components';
 import jsPDF from "jspdf";
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { Watermark } from '@hirohe/react-watermark';
+import { calculatorPrice } from 'src/utils/shop-util';
 
 Font.register({ family: 'Noto Sans CJK KR', src: '/fonts/NotoSansKR-Regular.ttf' });
 
@@ -30,28 +30,31 @@ align-items:center;
 text-align:center;
 `
 const WaterMarkContainer = styled.div`
-
+position:absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+opacity: 0.5;
+z-index:-1;
 `
 const WaterMark = styled.img`
 height: 128px;
 width: auto;
-position:absolute;
-top: 50%;
-left: 50%;
-transform: rotate(45deg);
+opacity: 0.5;
 `
 const EstimateData = (props) => {
     const { themeDnsData } = useSettingsContext();
     const {
         previewIndex,
-        products,
+        products = [],
+        idx,// 0 이상일시 단일, 아닐시 일괄
         style,
         class_name,
         customer,
-        product,
         dns_data,
         estimate,
     } = props;
+    console.log(estimate)
     const styles = StyleSheet.create({
         col: {
             display: 'flex',
@@ -74,8 +77,8 @@ const EstimateData = (props) => {
             padding: '0 0.5rem 1rem 0.5rem'
         }
     });
-    const renderPdfPage = (product, products) => {
-        const { budget, select_groups = [], price, count, name, characters = [], } = product;
+    const renderPdfPage = () => {
+
         let dnsData = themeDnsData || dns_data;
 
         return <>
@@ -130,10 +133,7 @@ const EstimateData = (props) => {
                             marginTop: '1rem'
                         }}>
                             <div style={styles.text}>
-                                TOTAL PRICE: {count}개 기준
-                            </div>
-                            <div style={styles.text}>
-                                {commarNumber(((budget?.budget_price || price) + _.sum(select_groups.map((group => { return group?.option_price ?? 0 })))) * count)} 원 (부가세포함가)
+                                {commarNumber(_.sum(_.map(products, (item) => { return calculatorPrice(item).total })))} 원 (부가세포함가)
                             </div>
                         </Row>
                     </Row>
@@ -202,66 +202,83 @@ const EstimateData = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody style={{ borderLeft: '1px solid #ccc' }}>
-                        <TableRow>
-                            <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>
-                                <img src={product?.product_img} style={{ width: '150px' }} />
-                            </TableCellComponent>
-                            <TableCellComponent>상품명</TableCellComponent>
-                            <TableCellComponent>{product?.name}</TableCellComponent>
-                            <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{product?.count}</TableCellComponent>
-                            <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{commarNumber(product?.price)}</TableCellComponent>
-                            <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{commarNumber(product?.price * product?.count)}</TableCellComponent>
-                            <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{estimate?.etc}</TableCellComponent>
-                        </TableRow>
-                        {select_groups && select_groups.map((group, idx) => (
-                            <>
+                        {products.map((product, index) => {
+                            const { budget, select_groups = [], price, count, name, characters = [], } = product;
+                            const product_estimate = product?.estimate;
+                            if (idx >= 0) {//전체
+                                if (index != idx) {
+                                    return <>
+                                    </>
+                                }
+                            }
+                            return <>
                                 <TableRow>
-                                    <TableCellComponent>{group?.group_name}</TableCellComponent>
-                                    <TableCellComponent>{group?.option_name}</TableCellComponent>
+                                    <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>
+                                        <img src={product?.product_img} style={{ width: '150px' }} />
+                                    </TableCellComponent>
+                                    <TableCellComponent>상품명</TableCellComponent>
+                                    <TableCellComponent>{product?.name}</TableCellComponent>
+                                    <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{product?.count}</TableCellComponent>
+                                    <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{commarNumber((calculatorPrice(product).total - calculatorPrice(product).install_price) / product?.count)}</TableCellComponent>
+                                    <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{commarNumber(calculatorPrice(product).total - calculatorPrice(product).install_price)}</TableCellComponent>
+                                    <TableCellComponent rowSpan={select_groups?.length + characters?.length + 1}>{product_estimate?.note}</TableCellComponent>
+                                </TableRow>
+                                {select_groups && select_groups.map((group, idx) => (
+                                    <>
+                                        <TableRow>
+                                            <TableCellComponent>{group?.group_name}</TableCellComponent>
+                                            <TableCellComponent>{group?.option_name}</TableCellComponent>
+                                        </TableRow>
+                                    </>
+                                ))}
+                                {characters && characters.map((character, idx) => (
+                                    <>
+                                        <TableRow>
+                                            <TableCellComponent>{character?.character_key}</TableCellComponent>
+                                            <TableCellComponent>{character?.character_value}</TableCellComponent>
+                                        </TableRow>
+                                    </>
+                                ))}
+                                <TableRow>
+                                    <TableCellComponent colSpan={3}>배송 및 설치비</TableCellComponent>
+                                    <TableCellComponent>{commarNumber(product_estimate?.install_count)}</TableCellComponent>
+                                    <TableCellComponent>{commarNumber(product_estimate?.install_price)}</TableCellComponent>
+                                    <TableCellComponent>{commarNumber(product_estimate?.install_price * product_estimate?.install_count)}</TableCellComponent>
+                                    <TableCellComponent></TableCellComponent>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCellComponent colSpan={3}>총합계</TableCellComponent>
+                                    <TableCellComponent></TableCellComponent>
+                                    <TableCellComponent colSpan={2}>
+                                        <Row style={{ justifyContent: 'space-between' }}>
+                                            <div>{commarNumber(calculatorPrice(product).total)}</div>
+                                            <div>원</div>
+                                        </Row>
+                                    </TableCellComponent>
+                                    <TableCellComponent></TableCellComponent>
                                 </TableRow>
                             </>
-                        ))}
-                        {characters && characters.map((character, idx) => (
+                        })}
+                        {!(idx >= 0) &&
                             <>
                                 <TableRow>
-                                    <TableCellComponent>{character?.character_key}</TableCellComponent>
-                                    <TableCellComponent>{character?.character_value}</TableCellComponent>
+                                    <TableCellComponent colSpan={3} style={{ color: 'red' }}>총합계</TableCellComponent>
+                                    <TableCellComponent></TableCellComponent>
+                                    <TableCellComponent colSpan={2} style={{ color: 'red' }}>
+                                        <Row style={{ justifyContent: 'space-between' }}>
+                                            <div>{commarNumber(_.sum(products.map((item) => { return calculatorPrice(item).total })))}</div>
+                                            <div>원</div>
+                                        </Row>
+                                    </TableCellComponent>
+                                    <TableCellComponent></TableCellComponent>
                                 </TableRow>
-                            </>
-                        ))}
-                        <TableRow>
-                            <TableCellComponent colSpan={3}>배송 및 설치비</TableCellComponent>
-                            <TableCellComponent>{commarNumber(estimate?.install_count)}</TableCellComponent>
-                            <TableCellComponent>{commarNumber(estimate?.install_price)}</TableCellComponent>
-                            <TableCellComponent>{commarNumber(estimate?.install_price * estimate?.install_count)}</TableCellComponent>
-                            <TableCellComponent></TableCellComponent>
-                        </TableRow>
-                        <TableRow>
-                            <TableCellComponent colSpan={3}>총합계</TableCellComponent>
-                            <TableCellComponent></TableCellComponent>
-                            <TableCellComponent colSpan={2}>
-                                <Row style={{ justifyContent: 'space-between' }}>
-                                    <div>{commarNumber(product?.price * product?.count + estimate?.install_price * estimate?.install_count)}</div>
-                                    <div>원</div>
-                                </Row>
-                            </TableCellComponent>
-                            <TableCellComponent></TableCellComponent>
-                        </TableRow>
+                            </>}
                     </TableBody>
                 </Table>
             </Col>
         </>
     }
-    if (product) {
-        return renderPdfPage(product,)
-    }
-    return (
-        <>
-            {products.map((product, idx) => {
-                return renderPdfPage(product, idx)
-            })}
-        </>
-    )
+    return renderPdfPage()
 }
 
 export default EstimateData;

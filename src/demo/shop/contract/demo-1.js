@@ -56,9 +56,6 @@ const Demo1 = (props) => {
   });
   const [estimate, setEstimate] = useState({
     title: '',
-    etc: '',
-    install_price: 0,
-    install_count: 0,
   })
   const [openDialog, setOpenDialog] = useState('');
   const [previewIndex, setPreviewIndex] = useState(undefined);
@@ -95,7 +92,7 @@ const Demo1 = (props) => {
   }
   const onClickNextStep = () => {
 
-    if (activeStep == 2) {
+    if (activeStep == 2 && !router.query?.id) {
       setModal({
         func: () => { onClickReflectEstimate(); },
         icon: 'carbon:next-outline',
@@ -107,6 +104,7 @@ const Demo1 = (props) => {
     setActiveStep(activeStep + 1);
     scrollTo(0, 0)
   }
+ 
   const onClickPrevStep = () => {
     setActiveStep(activeStep - 1);
     scrollTo(0, 0)
@@ -117,7 +115,6 @@ const Demo1 = (props) => {
   }
   const onClickEstimatePreview = (idx) => {
     setPreviewIndex(idx);
-    console.log(idx)
     setOpenDialog('estimate')
     if (idx == -1) {//여러개 미리보기
 
@@ -125,23 +122,7 @@ const Demo1 = (props) => {
 
     }
   }
-  async function addWaterMark(doc) {
-    var totalPages = doc.internal.getNumberOfPages();
-    console.log(totalPages)
-    for (var i = 1; i <= totalPages; i++) {
-      await doc.setPage(i);
-      //doc.addImage(imgData, 'PNG', 40, 40, 75, 75);
-      await doc.saveGraphicsState();
-      await doc.setGState(new doc.GState({ opacity: 0.2 }));
-      await doc.setTextColor('#cccccc');
-      await doc.addFont('/fonts/NotoSansKR-Regular.ttf', 'Noto Sans CJK KR', 'normal');
-      await doc.setFont('Noto Sans CJK KR')
-      await doc.setFontSize(150);
-      await doc.text(`가나다`, 160, doc.internal.pageSize.height - 200, { angle: 45, });
-    }
 
-    return doc;
-  }
   const onSavePdf = async (idx) => {
     let doc = new jsPDF({
       orientation: 'p',
@@ -166,7 +147,6 @@ const Demo1 = (props) => {
       windowWidth: 580,
       margin: 15,
     });
-    doc = await addWaterMark(doc);
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       // 모바일인 경우
       doc.save(`${user?.name}견적서${returnMoment().replaceAll(' ', '').replaceAll('-', '').replaceAll(':', '')}`)
@@ -210,7 +190,7 @@ const Demo1 = (props) => {
             ref={(element) => {
               estimateRef.current[index] = element;
             }}>
-            <EstimateData product={product} customer={customer} dns_data={themeDnsData} estimate={estimate} />
+            <EstimateData products={products} idx={index} customer={customer} dns_data={themeDnsData} estimate={estimate} />
           </div>
         </div>
       })}
@@ -258,7 +238,7 @@ const Demo1 = (props) => {
           </Grid>
         </Grid>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={9}>
             {activeStep == 0 &&
               <>
                 <Card>
@@ -308,46 +288,6 @@ const Demo1 = (props) => {
                             }
                           )
                         }} />
-                      <TextField
-                        label='배송 및 설치 수량'
-                        type='number'
-                        value={estimate.install_count}
-                        onChange={(e) => {
-                          setEstimate(
-                            {
-                              ...estimate,
-                              ['install_count']: e.target.value
-                            }
-                          )
-                        }} />
-                      <TextField
-                        label='배송 및 설치 비용'
-                        type='number'
-                        value={estimate.install_price}
-                        InputProps={{
-                          endAdornment: (
-                            <>원</>
-                          )
-                        }}
-                        onChange={(e) => {
-                          setEstimate(
-                            {
-                              ...estimate,
-                              ['install_price']: e.target.value
-                            }
-                          )
-                        }} />
-                      <TextField
-                        label='비고'
-                        value={estimate.etc}
-                        onChange={(e) => {
-                          setEstimate(
-                            {
-                              ...estimate,
-                              ['etc']: e.target.value
-                            }
-                          )
-                        }} />
                     </Stack>
                   </CardContent>
                 </Card>
@@ -359,6 +299,7 @@ const Demo1 = (props) => {
                     <>
                       <CheckoutCartProductList
                         products={products}
+                        setProducts={setProducts}
                         onDelete={onDelete}
                         onDecreaseQuantity={onDecreaseQuantity}
                         onIncreaseQuantity={onIncreaseQuantity}
@@ -387,12 +328,13 @@ const Demo1 = (props) => {
                 </Card>
               </>}
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <CheckoutSummary
               enableDiscount
-              total={_.sum(_.map(products, (item) => { return calculatorPrice(item).total }))}
-              option_price={_.sum(_.map(products, (item) => { return calculatorPrice(item).option_price }))}
-              subtotal={_.sum(_.map(products, (item) => { return calculatorPrice(item).subtotal }))}
+              total={_.sum(products.map((item) => { return calculatorPrice(item).total }))}
+              option_price={_.sum(products.map((item) => { return calculatorPrice(item).option_price }))}
+              subtotal={_.sum(products.map((item) => { return calculatorPrice(item).subtotal }))}
+              install_price={_.sum(products.map((item) => { return calculatorPrice(item).install_price }))}
             />
             <Button
               fullWidth
@@ -406,7 +348,7 @@ const Demo1 = (props) => {
               sx={{ whiteSpace: 'nowrap', marginBottom: '1rem' }}
 
             >
-              견적서 일괄 출력
+              견적서 출력
             </Button>
           </Grid>
         </Grid>

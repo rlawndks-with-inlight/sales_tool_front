@@ -408,8 +408,8 @@ const Header = () => {
                                     sx={iconButtonStyle}
                                     onClick={() => {
                                         if (user) {
-                                        router.push(`/shop/contract`);
-                                        } 
+                                            router.push(`/shop/contract`);
+                                        }
                                     }}
                                 >
                                     <Badge badgeContent={themeCartData.length} color="error">
@@ -468,7 +468,7 @@ const Header = () => {
                                 <div className="fade-in-text" style={{ display: `${isAuthMenuOver ? 'none' : 'flex'}`, alignItems: 'center' }}>
                                     {user ?
                                         <>
-                                            <AuthMenu theme={theme} style={{ borderRight: 'none' }}>마이페이지</AuthMenu>
+                                            <AuthMenu theme={theme} style={{ borderRight: 'none' }} onClick={() => { router.push(authList[0].link_key) }}>마이페이지</AuthMenu>
                                         </>
                                         :
                                         <>
@@ -640,7 +640,7 @@ const Header = () => {
                             }} style={{ paddingLeft: '1rem' }}>{item.post_category_title}</ColumnMenuContent>
                         </>
                     ))}
-                    <ColumnMenuTitle>마이페이지</ColumnMenuTitle>
+                    <ColumnMenuTitle onClick={() => { router.push(authList[0].link_key) }}>마이페이지</ColumnMenuTitle>
                     {user ?
                         <>
                             {authList.map((item, idx) => (

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
-import { Box, Stack, Divider, TableRow, TableCell, Typography, IconButton, Tooltip } from '@mui/material';
+import { Box, Stack, Divider, TableRow, TableCell, Typography, IconButton, Tooltip, TextField, TextareaAutosize } from '@mui/material';
 // utils
 import { fCurrency } from 'src/utils/formatNumber';
 // components
@@ -11,11 +11,11 @@ import { ColorPreview } from 'src/components/color-utils';
 import { IncrementerButton } from 'src/components/custom-input';
 import { commarNumber } from 'src/utils/function';
 import _ from 'lodash';
-import EstimateData from 'src/views/contract/EstimateData';
 import { BlobProvider, pdf, renderToString } from '@react-pdf/renderer';
 import { useSettingsContext } from 'src/components/settings';
 import jsPDF from 'jspdf';
 import "jspdf-autotable";
+import { useState } from 'react';
 // ----------------------------------------------------------------------
 
 CheckoutCartProduct.propTypes = {
@@ -25,10 +25,24 @@ CheckoutCartProduct.propTypes = {
   onIncrease: PropTypes.func,
 };
 
-export default function CheckoutCartProduct({ row, customer, onDelete, onDecrease, onIncrease, onClickEstimatePreview, onSavePdf, idx }) {
-  const { themeDnsData } = useSettingsContext();
-  const { name, size, price, colors, cover, quantity, available, select_groups = [], budget, product_img, count } = row;
-
+export default function CheckoutCartProduct({ row, customer, onDelete, onDecrease, onIncrease, onClickEstimatePreview, onSavePdf, idx, setProducts, products }) {
+  const { themeDnsData, themeCartData, onChangeCartData } = useSettingsContext();
+  const { name, size, price, colors, cover, quantity, available, select_groups = [], budget, product_img, count, estimate } = row;
+  const [estimateContent, setEstimateContent] = useState(estimate);
+  const onChangeProductEstimate = prop => event => {
+    let value = event.target.value;
+    if (!isNaN(parseFloat(value))) {
+      value = parseFloat(value);
+    }
+    let obj = {
+      ...estimateContent,
+      [prop]: value
+    }
+    setEstimateContent(obj)
+    let product_list = products;
+    product_list[idx]['estimate'] = obj;
+    onChangeCartData(product_list);
+  }
   return (
     <TableRow>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
@@ -79,15 +93,39 @@ export default function CheckoutCartProduct({ row, customer, onDelete, onDecreas
           />
         </Box>
       </TableCell>
-      <TableCell>{fCurrency(((budget?.budget_price || price) + _.sum(select_groups.map((group => { return group?.option_price ?? 0 })))) * count)} 원</TableCell>
-      <TableCell align='center'>
-        <Tooltip title={'해당 행의 내용만 들어있는 견적서가 출력됩니다.'}>
-          <IconButton onClick={() => {
-            onSavePdf(idx);
-          }}>
-            <Iconify icon="bi:file-pdf" />
-          </IconButton>
-        </Tooltip>
+      <TableCell>
+        {fCurrency(((budget?.budget_price || price) + _.sum(select_groups.map((group => { return group?.option_price ?? 0 })))) * count)} 원
+      </TableCell>
+      <TableCell>
+        <Stack spacing={2}>
+          <TextField
+            sx={{ minWidth: '120px' }}
+            size='small'
+            label='배송 및 설치비'
+            type='number'
+            value={estimateContent?.install_price ?? 0}
+            onChange={onChangeProductEstimate('install_price')}
+          />
+          <TextField
+            sx={{ minWidth: '120px' }}
+            size='small'
+            label='배송 및 설치수량'
+            type='number'
+            value={estimateContent?.install_count ?? 0}
+            onChange={onChangeProductEstimate('install_count')}
+          />
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <TextField
+          sx={{ minWidth: '120px' }}
+          fullWidth
+          label="비고"
+          multiline
+          rows={3}
+          value={estimateContent?.note ?? ""}
+          onChange={onChangeProductEstimate('note')}
+        />
       </TableCell>
       <TableCell align="right">
         <IconButton onClick={onDelete}>

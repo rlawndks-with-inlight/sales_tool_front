@@ -39,6 +39,7 @@ export default function CheckoutSummary({
   shipping,
   enableEdit = false,
   enableDiscount = false,
+  install_price,
 }) {
   const displayShipping = shipping !== null ? 'Free' : '-';
 
@@ -69,7 +70,12 @@ export default function CheckoutSummary({
             </Typography>
             <Typography variant="subtitle2">{fCurrency(option_price)}원</Typography>
           </Stack>
-
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              배송 및 설치비
+            </Typography>
+            <Typography variant="subtitle2">{fCurrency(install_price)}원</Typography>
+          </Stack>
           <Divider />
 
           <Stack direction="row" justifyContent="space-between">
