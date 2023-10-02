@@ -116,7 +116,6 @@ export function SettingsProvider({ children }) {
       setThemeCurrentPageObj(currentPageObj);
       setThemeCartData(cartData);
       setThemeWishData(wishData);
-      getSettingData();
       getDnsData();
     }
   }, []);
@@ -127,7 +126,7 @@ export function SettingsProvider({ children }) {
       dns_data = response?.data;
       dns_data['shop_demo_num'] = dns_data?.setting_obj?.shop_demo_num;
       onChangeDnsData(dns_data);
-
+      getSettingData();
     } catch (err) {
       console.log(err)
     }
