@@ -18,9 +18,9 @@ export const PATH_MANAGER = {
   one: path(ROOTS_MANAGER, '/one'),
   two: path(ROOTS_MANAGER, '/two'),
   three: path(ROOTS_MANAGER, '/three'),
-  user: {
-    root: path(ROOTS_MANAGER, '/user'),
-    list: path(ROOTS_MANAGER, '/user/list'),
+  customer: {
+    root: path(ROOTS_MANAGER, '/customer'),
+    list: path(ROOTS_MANAGER, '/customer/list'),
   },
   product: {
     root: path(ROOTS_MANAGER, '/product'),
@@ -40,10 +40,10 @@ export const PATH_MANAGER = {
     list: path(ROOTS_MANAGER, '/brand/list'),
     shopDesign: path(ROOTS_MANAGER, '/brand/shop-design'),
   },
-  salesMan: {
-    root: path(ROOTS_MANAGER, '/sales-man'),
-    list: path(ROOTS_MANAGER, '/sales-man/list'),
-    organizationChart: path(ROOTS_MANAGER, '/sales-man/organization-chart'),
+  user: {
+    root: path(ROOTS_MANAGER, '/user'),
+    list: path(ROOTS_MANAGER, '/user/list'),
+    organizationChart: path(ROOTS_MANAGER, '/user/organization-chart'),
   },
   log: {
     root: path(ROOTS_MANAGER, '/log'),

@@ -31,9 +31,12 @@ const UserEdit = () => {
     user_name: '',
     phone_num: '',
     nickname: '',
+    name: '',
+    parent_id: -1,
+    parent_user_name: '',
+    level: 10,
     user_pw: '',
     note: '',
-    name: '',
   })
 
   useEffect(() => {
@@ -104,6 +107,7 @@ const UserEdit = () => {
                   <TextField
                     label='아이디'
                     value={item.user_name}
+                    disabled={router.query?.edit_category == 'edit'}
                     onChange={(e) => {
                       setItem(
                         {
@@ -163,20 +167,21 @@ const UserEdit = () => {
                         }
                       )
                     }} />
+                  {router.query?.edit_category == 'add' &&
+                    <>
+                      <TextField
+                        label='상위영업자아이디'
+                        value={item.parent_user_name}
+                        onChange={(e) => {
+                          setItem(
+                            {
+                              ...item,
+                              ['parent_user_name']: e.target.value
+                            }
+                          )
+                        }} />
+                    </>}
                   <Stack spacing={1}>
-                    <TextField
-                      fullWidth
-                      label="고객메모"
-                      multiline
-                      rows={4}
-                      value={item.note}
-                      onChange={(e) => {
-                        setItem({
-                          ...item,
-                          ['note']: e.target.value
-                        })
-                      }}
-                    />
                   </Stack>
                 </Stack>
               </Card>

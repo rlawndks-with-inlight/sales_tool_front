@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -9,30 +9,14 @@ import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
 import { getUserLevelByNumber } from "src/utils/function";
-import { useAuthContext } from "src/auth/useAuthContext";
-const SalesManList = () => {
+const CustomerList = () => {
   const { setModal } = useModal()
-  const { user } = useAuthContext();
   const defaultColumns = [
     {
       id: 'profile_img',
       label: '유저프로필',
       action: (row) => {
         return <Avatar src={row['profile_img'] ?? "---"} />
-      }
-    },
-    {
-      id: 'user_name',
-      label: '유저아이디',
-      action: (row) => {
-        return row['user_name'] ?? "---"
-      }
-    },
-    {
-      id: 'parent_user_name',
-      label: '상위유저아이디',
-      action: (row) => {
-        return row['parent_user_name'] ?? "---"
       }
     },
     {
@@ -43,15 +27,8 @@ const SalesManList = () => {
       }
     },
     {
-      id: 'name',
-      label: '이름',
-      action: (row) => {
-        return row['name'] ?? "---"
-      }
-    },
-    {
       id: 'phone_num',
-      label: '전화번호',
+      label: '휴대폰번호',
       action: (row) => {
         return row['phone_num'] ?? "---"
       }
@@ -68,61 +45,6 @@ const SalesManList = () => {
       label: '가입일',
       action: (row) => {
         return row['created_at'] ?? "---"
-      }
-    },
-    {
-      id: 'last_login_time',
-      label: '마지막로그인시간',
-      action: (row) => {
-        return row['last_login_time'] ?? "---"
-      }
-    },
-    {
-      id: 'status',
-      label: '유저상태',
-      action: (row, idx) => {
-
-        return <Select
-          size='small'
-          value={row?.status}
-          disabled={!(user?.level >= 40)}
-          onChange={async (e) => {
-            let result = await apiManager(`users/change-status`, 'update', {
-              id: row?.id,
-              status: e.target.value
-            });
-            if (result) {
-              onChangePage(searchObj)
-            }
-          }}
-
-        >
-          <MenuItem value={'0'}>{'판매중'}</MenuItem>
-          <MenuItem value={'1'}>{'가입대기'}</MenuItem>
-          <MenuItem value={'2'}>{'로그인금지'}</MenuItem>
-        </Select>
-      }
-    },
-    {
-      id: 'edit_password',
-      label: '비밀번호 변경',
-      action: (row) => {
-        if (user?.level < row?.level) {
-          return "---"
-        }
-        return (
-          <>
-            <IconButton onClick={() => {
-              setDialogObj({ ...dialogObj, changePassword: true })
-              setChangePasswordObj({
-                user_pw: '',
-                id: row?.id
-              })
-            }}>
-              <Icon icon='material-symbols:lock-outline' />
-            </IconButton>
-          </>
-        )
       }
     },
     {
@@ -159,7 +81,6 @@ const SalesManList = () => {
     s_dt: '',
     e_dt: '',
     search: '',
-    is_sales_man: true,
   })
   const [dialogObj, setDialogObj] = useState({
     changePassword: false,
@@ -174,14 +95,14 @@ const SalesManList = () => {
   const pageSetting = () => {
     let cols = defaultColumns;
     setColumns(cols)
-    onChangePage({ ...searchObj, page: 1 });
+    onChangePage({ ...searchObj, page: 1, });
   }
   const onChangePage = async (obj) => {
     setData({
       ...data,
       content: undefined
     })
-    let data_ = await apiManager('sales-man', 'list', obj);
+    let data_ = await apiManager('customers', 'list', obj);
     if (data_) {
       setData(data_);
     }
@@ -194,15 +115,11 @@ const SalesManList = () => {
     }
   }
   const onChangeUserPassword = async () => {
-    let result = await apiManager(`users/change-pw`, 'update', changePasswordObj);
+    let result = await apiManager(`customers/change-pw`, 'update', changePasswordObj);
     if (result) {
       setDialogObj({
         ...dialogObj,
         changePassword: false
-      })
-      setChangePasswordObj({
-        id: '',
-        user_pw: ''
       })
       toast.success("성공적으로 변경 되었습니다.");
     }
@@ -253,12 +170,12 @@ const SalesManList = () => {
             columns={columns}
             searchObj={searchObj}
             onChangePage={onChangePage}
-            add_button_text={'영업자 추가'}
+            add_button_text={'회원 추가'}
           />
         </Card>
       </Stack>
     </>
   )
 }
-SalesManList.getLayout = (page) => <ManagerLayout>{page}</ManagerLayout>;
-export default SalesManList
+CustomerList.getLayout = (page) => <ManagerLayout>{page}</ManagerLayout>;
+export default CustomerList

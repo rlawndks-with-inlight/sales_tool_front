@@ -39,7 +39,7 @@ const SalesManOrganizationChart = () => {
     }
     const onChangePage = async (obj) => {
         setData(undefined)
-        let data_ = await apiManager('sales-man/organizational-chart', 'list', obj);
+        let data_ = await apiManager('users/organizational-chart', 'list', obj);
         if (data_) {
             if(!data_[0]?.children){
                 data_[0].children = [];

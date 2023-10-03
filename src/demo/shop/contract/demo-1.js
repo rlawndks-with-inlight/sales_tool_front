@@ -133,7 +133,7 @@ const Demo1 = (props) => {
     });
 
     doc.addFont('/fonts/NotoSansKR-Regular.ttf', 'Noto Sans CJK KR', 'normal');
-    doc.setFont('Noto Sans CJK KR')
+    doc.setFont('Noto Sans CJK KR');
     let html = undefined;
 
     if (idx >= 0) {

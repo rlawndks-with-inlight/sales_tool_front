@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, Stack, TextField } from "@mui/material";
+import { Avatar, Button, Card, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, MenuItem, Select, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import ManagerTable from "src/views/manager/table/ManagerTable";
 import { Icon } from "@iconify/react";
@@ -9,14 +9,30 @@ import { useModal } from "src/components/dialog/ModalProvider";
 import ManagerLayout from "src/layouts/manager/ManagerLayout";
 import { apiManager } from "src/utils/api-manager";
 import { getUserLevelByNumber } from "src/utils/function";
+import { useAuthContext } from "src/auth/useAuthContext";
 const UserList = () => {
   const { setModal } = useModal()
+  const { user } = useAuthContext();
   const defaultColumns = [
     {
       id: 'profile_img',
       label: '유저프로필',
       action: (row) => {
         return <Avatar src={row['profile_img'] ?? "---"} />
+      }
+    },
+    {
+      id: 'user_name',
+      label: '유저아이디',
+      action: (row) => {
+        return row['user_name'] ?? "---"
+      }
+    },
+    {
+      id: 'parent_user_name',
+      label: '상위유저아이디',
+      action: (row) => {
+        return row['parent_user_name'] ?? "---"
       }
     },
     {
@@ -27,8 +43,15 @@ const UserList = () => {
       }
     },
     {
+      id: 'name',
+      label: '이름',
+      action: (row) => {
+        return row['name'] ?? "---"
+      }
+    },
+    {
       id: 'phone_num',
-      label: '휴대폰번호',
+      label: '전화번호',
       action: (row) => {
         return row['phone_num'] ?? "---"
       }
@@ -48,9 +71,45 @@ const UserList = () => {
       }
     },
     {
+      id: 'last_login_time',
+      label: '마지막로그인시간',
+      action: (row) => {
+        return row['last_login_time'] ?? "---"
+      }
+    },
+    {
+      id: 'status',
+      label: '유저상태',
+      action: (row, idx) => {
+
+        return <Select
+          size='small'
+          value={row?.status}
+          disabled={!(user?.level >= 40)}
+          onChange={async (e) => {
+            let result = await apiManager(`users/change-status`, 'update', {
+              id: row?.id,
+              status: e.target.value
+            });
+            if (result) {
+              onChangePage(searchObj)
+            }
+          }}
+
+        >
+          <MenuItem value={'0'}>{'정상'}</MenuItem>
+          <MenuItem value={'1'}>{'가입대기'}</MenuItem>
+          <MenuItem value={'2'}>{'로그인금지'}</MenuItem>
+        </Select>
+      }
+    },
+    {
       id: 'edit_password',
       label: '비밀번호 변경',
       action: (row) => {
+        if (user?.level < row?.level) {
+          return "---"
+        }
         return (
           <>
             <IconButton onClick={() => {
@@ -100,6 +159,7 @@ const UserList = () => {
     s_dt: '',
     e_dt: '',
     search: '',
+    is_sales_man: true,
   })
   const [dialogObj, setDialogObj] = useState({
     changePassword: false,
@@ -114,7 +174,7 @@ const UserList = () => {
   const pageSetting = () => {
     let cols = defaultColumns;
     setColumns(cols)
-    onChangePage({ ...searchObj, page: 1, });
+    onChangePage({ ...searchObj, page: 1 });
   }
   const onChangePage = async (obj) => {
     setData({
@@ -128,8 +188,8 @@ const UserList = () => {
     setSearchObj(obj);
   }
   const deleteUser = async (id) => {
-    let result = await deleteUserByManager({ id: id });
-    if (result) {
+    let data = await apiManager('users', 'delete', { id });
+    if (data) {
       onChangePage(searchObj);
     }
   }
@@ -139,6 +199,10 @@ const UserList = () => {
       setDialogObj({
         ...dialogObj,
         changePassword: false
+      })
+      setChangePasswordObj({
+        id: '',
+        user_pw: ''
       })
       toast.success("성공적으로 변경 되었습니다.");
     }
@@ -189,7 +253,7 @@ const UserList = () => {
             columns={columns}
             searchObj={searchObj}
             onChangePage={onChangePage}
-            add_button_text={'회원 추가'}
+            add_button_text={'영업자 추가'}
           />
         </Card>
       </Stack>

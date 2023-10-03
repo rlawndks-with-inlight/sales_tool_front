@@ -73,10 +73,10 @@ const navConfig = () => {
       items: [
         {
           title: '고객관리',
-          path: PATH_MANAGER.user.root,
+          path: PATH_MANAGER.customer.root,
           icon: ICONS.user,
           children: [
-            { title: '회원관리', path: PATH_MANAGER.user.list },
+            { title: '회원관리', path: PATH_MANAGER.customer.list },
           ],
         },
       ],
@@ -98,11 +98,11 @@ const navConfig = () => {
       items: [
         {
           title: '영업자관리',
-          path: PATH_MANAGER.salesMan.root,
+          path: PATH_MANAGER.user.root,
           icon: ICONS.user,
           children: [
-            { title: '영업자관리', path: PATH_MANAGER.salesMan.list },
-            { title: '영업자조직도', path: PATH_MANAGER.salesMan.organizationChart },
+            { title: '영업자관리', path: PATH_MANAGER.user.list },
+            { title: '영업자조직도', path: PATH_MANAGER.user.organizationChart },
           ],
         },
       ],

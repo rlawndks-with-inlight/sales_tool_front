@@ -19,7 +19,7 @@ const ReactQuill = dynamic(() => import('react-quill'), {
   loading: () => <p>Loading ...</p>,
 })
 
-const SalesManEdit = () => {
+const CustomerEdit = () => {
   const { setModal } = useModal()
   const { themeMode } = useSettingsContext();
 
@@ -31,12 +31,9 @@ const SalesManEdit = () => {
     user_name: '',
     phone_num: '',
     nickname: '',
-    name: '',
-    parent_id: -1,
-    parent_user_name: '',
-    level: 10,
     user_pw: '',
     note: '',
+    name: '',
   })
 
   useEffect(() => {
@@ -60,7 +57,7 @@ const SalesManEdit = () => {
     }
     if (result) {
       toast.success("성공적으로 저장 되었습니다.");
-      router.push('/manager/sales-man');
+      router.push('/manager/user');
     }
   }
   return (
@@ -107,7 +104,6 @@ const SalesManEdit = () => {
                   <TextField
                     label='아이디'
                     value={item.user_name}
-                    disabled={router.query?.edit_category == 'edit'}
                     onChange={(e) => {
                       setItem(
                         {
@@ -167,21 +163,20 @@ const SalesManEdit = () => {
                         }
                       )
                     }} />
-                  {router.query?.edit_category == 'add' &&
-                    <>
-                      <TextField
-                        label='상위영업자아이디'
-                        value={item.parent_user_name}
-                        onChange={(e) => {
-                          setItem(
-                            {
-                              ...item,
-                              ['parent_user_name']: e.target.value
-                            }
-                          )
-                        }} />
-                    </>}
                   <Stack spacing={1}>
+                    <TextField
+                      fullWidth
+                      label="고객메모"
+                      multiline
+                      rows={4}
+                      value={item.note}
+                      onChange={(e) => {
+                        setItem({
+                          ...item,
+                          ['note']: e.target.value
+                        })
+                      }}
+                    />
                   </Stack>
                 </Stack>
               </Card>
@@ -208,5 +203,5 @@ const SalesManEdit = () => {
     </>
   )
 }
-SalesManEdit.getLayout = (page) => <ManagerLayout>{page}</ManagerLayout>;
-export default SalesManEdit
+CustomerEdit.getLayout = (page) => <ManagerLayout>{page}</ManagerLayout>;
+export default CustomerEdit
